@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="start"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/space_sm">
+
+    <TextView
+        android:id="@+id/message_sender"
+        style="@style/TextAppearance.Marvel.Label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/space_xxs"
+        android:textColor="@color/jarvis_blue"
+        tools:text="JARVIS" />
+
+    <TextView
+        android:id="@+id/message_text"
+        style="@style/TextAppearance.Marvel.Body"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="48dp"
+        android:background="@drawable/bg_chat_jarvis"
+        android:padding="@dimen/space_sm"
+        android:textColor="@color/white"
+        tools:text="@string/jarvis_welcome" />
+</LinearLayout>

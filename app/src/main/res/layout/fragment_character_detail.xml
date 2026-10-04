@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/app_background"
+    android:clipToPadding="false"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/space_xl">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/hero_image_height">
+
+            <ImageView
+                android:id="@+id/detail_character_image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/surface_secondary"
+                android:contentDescription="@string/loading_image"
+                android:scaleType="centerCrop"
+                tools:src="@drawable/comic_collage_muted" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/bg_image_scrim" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/detail_back_button"
+                style="@style/Widget.Marvel.Button.Icon"
+                android:layout_width="@dimen/touch_target"
+                android:layout_height="@dimen/touch_target"
+                android:layout_gravity="start|top"
+                android:layout_margin="@dimen/space_md"
+                android:contentDescription="@string/navigate_back"
+                app:backgroundTint="@color/surface_elevated"
+                app:icon="@drawable/ic_arrow_back"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/detail_favorite_button"
+                style="@style/Widget.Marvel.Button.Icon"
+                android:layout_width="@dimen/touch_target"
+                android:layout_height="@dimen/touch_target"
+                android:layout_gravity="end|top"
+                android:layout_margin="@dimen/space_md"
+                android:contentDescription="@string/favorite_add"
+                app:backgroundTint="@color/surface_elevated"
+                app:icon="@drawable/ic_favorite_outline"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:orientation="vertical"
+                android:padding="@dimen/screen_padding">
+
+                <TextView
+                    android:id="@+id/detail_category"
+                    style="@style/TextAppearance.Marvel.Label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_red_label"
+                    android:text="@string/character_category"
+                    android:textColor="@color/white" />
+
+                <TextView
+                    android:id="@+id/detail_character_name"
+                    style="@style/TextAppearance.Marvel.Display"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_xs"
+                    android:maxLines="2"
+                    android:textColor="@color/white"
+                    tools:text="@string/character_name_sample" />
+
+                <TextView
+                    android:id="@+id/detail_identity"
+                    style="@style/TextAppearance.Marvel.Body"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    tools:text="Miles Gonzalo Morales • Terra 1610" />
+            </LinearLayout>
+        </FrameLayout>
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_md"
+            android:clipToPadding="false"
+            android:paddingHorizontal="@dimen/screen_padding"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <include layout="@layout/item_stat_summary" android:id="@+id/detail_powers_stat" />
+                <include layout="@layout/item_stat_summary" android:id="@+id/detail_appearances_stat" />
+                <include layout="@layout/item_stat_summary" android:id="@+id/detail_teams_stat" />
+            </LinearLayout>
+        </HorizontalScrollView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/screen_padding">
+
+            <TextView
+                style="@style/TextAppearance.Marvel.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_lg"
+                android:text="@string/detail_overview" />
+
+            <TextView
+                android:id="@+id/detail_description"
+                style="@style/TextAppearance.Marvel.Body"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_xs"
+                android:textIsSelectable="true"
+                tools:text="@string/detail_no_description" />
+
+            <TextView
+                style="@style/TextAppearance.Marvel.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_lg"
+                android:text="@string/detail_powers" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/detail_powers_group"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_xs"
+                app:singleLine="false" />
+
+            <TextView
+                style="@style/TextAppearance.Marvel.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_lg"
+                android:text="@string/detail_teams" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/detail_teams_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_xs"
+                android:nestedScrollingEnabled="false"
+                tools:itemCount="2"
+                tools:listitem="@layout/item_character_row" />
+
+            <TextView
+                style="@style/TextAppearance.Marvel.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_lg"
+                android:text="@string/detail_appearances" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/detail_appearances_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_xs"
+                android:nestedScrollingEnabled="false"
+                tools:itemCount="3"
+                tools:listitem="@layout/item_character_row" />
+        </LinearLayout>
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

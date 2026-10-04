@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="128dp"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="@dimen/space_xs"
+    android:background="@drawable/bg_comic_panel"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="@dimen/space_sm">
+
+    <TextView
+        android:id="@+id/stat_value"
+        style="@style/TextAppearance.Marvel.Title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/marvel_red"
+        tools:text="12" />
+
+    <TextView
+        android:id="@+id/stat_label"
+        style="@style/TextAppearance.Marvel.Label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        tools:text="@string/stat_powers" />
+</LinearLayout>

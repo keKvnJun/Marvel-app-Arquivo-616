@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/nav_home">
+
+    <fragment android:id="@+id/nav_home" android:name="com.example.marvel_app.ui.home.HomeFragment" android:label="@string/nav_home">
+        <action android:id="@+id/action_home_to_spider_verse" app:destination="@id/spiderVerseFragment" app:enterAnim="@anim/portal_enter" app:exitAnim="@anim/screen_exit" />
+        <action android:id="@+id/action_home_to_detail" app:destination="@id/characterDetailFragment" app:enterAnim="@anim/screen_enter" app:exitAnim="@anim/screen_exit" />
+    </fragment>
+    <fragment android:id="@+id/nav_explore" android:name="com.example.marvel_app.ui.explore.ExploreFragment" android:label="@string/nav_explore">
+        <argument android:name="initialQuery" app:argType="string" android:defaultValue="" />
+        <action android:id="@+id/action_explore_to_detail" app:destination="@id/characterDetailFragment" app:enterAnim="@anim/screen_enter" app:exitAnim="@anim/screen_exit" />
+    </fragment>
+    <fragment android:id="@+id/nav_duel" android:name="com.example.marvel_app.ui.duel.DuelFragment" android:label="@string/nav_duel" />
+    <fragment android:id="@+id/nav_jarvis" android:name="com.example.marvel_app.ui.jarvis.JarvisFragment" android:label="@string/nav_jarvis" />
+    <fragment android:id="@+id/nav_archive" android:name="com.example.marvel_app.ui.archive.ArchiveFragment" android:label="@string/nav_archive">
+        <action android:id="@+id/action_archive_to_detail" app:destination="@id/characterDetailFragment" app:enterAnim="@anim/screen_enter" app:exitAnim="@anim/screen_exit" />
+    </fragment>
+    <fragment android:id="@+id/spiderVerseFragment" android:name="com.example.marvel_app.ui.spiderverse.SpiderVerseFragment" android:label="@string/spider_title">
+        <action android:id="@+id/action_spider_verse_to_explore" app:destination="@id/nav_explore" app:popUpTo="@id/nav_home" />
+    </fragment>
+    <fragment android:id="@+id/characterDetailFragment" android:name="com.example.marvel_app.ui.detail.CharacterDetailFragment" android:label="@string/action_open_dossier">
+        <argument android:name="objectId" app:argType="string" />
+        <argument android:name="characterId" app:argType="long" android:defaultValue="0L" />
+        <argument android:name="name" app:argType="string" android:defaultValue="" />
+        <argument android:name="realName" app:argType="string" android:defaultValue="" />
+        <argument android:name="imageUrl" app:argType="string" android:defaultValue="" />
+        <argument android:name="appearances" app:argType="integer" android:defaultValue="0" />
+    </fragment>
+</navigation>

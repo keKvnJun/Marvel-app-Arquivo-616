@@ -1,7 +1,25 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
     <style name="Base.Theme.Marvelapp" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+        <item name="colorPrimary">@color/marvel_red</item>
+        <item name="colorOnPrimary">@color/text_on_accent</item>
+        <item name="colorSecondary">@color/comic_yellow</item>
+        <item name="colorOnSecondary">@color/app_background</item>
+        <item name="colorTertiary">@color/jarvis_blue</item>
+        <item name="colorOnTertiary">@color/app_background</item>
+        <item name="android:colorBackground">@color/app_background</item>
+        <item name="colorSurface">@color/surface_primary</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+        <item name="colorSurfaceVariant">@color/surface_secondary</item>
+        <item name="colorOnSurfaceVariant">@color/text_secondary</item>
+        <item name="colorOutline">@color/outline_color</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:statusBarColor">@color/app_background</item>
+        <item name="android:navigationBarColor">@color/surface_primary</item>
+        <item name="android:windowActionModeOverlay">true</item>
+        <item name="android:fontFamily">sans</item>
+        <item name="materialButtonStyle">@style/Widget.Marvel.Button.Primary</item>
+        <item name="materialCardViewStyle">@style/Widget.Marvel.Card</item>
+        <item name="chipStyle">@style/Widget.Marvel.Chip</item>
+        <item name="bottomNavigationStyle">@style/Widget.Marvel.BottomNavigation</item>
     </style>
 </resources>

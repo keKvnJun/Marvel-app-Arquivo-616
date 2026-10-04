@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Widget.Marvel.Card"
+    android:layout_width="match_parent"
+    android:layout_height="124dp"
+    android:layout_marginBottom="@dimen/space_sm"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground"
+    app:strokeColor="@color/marvel_red"
+    app:strokeWidth="2dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/variant_image"
+            android:layout_width="112dp"
+            android:layout_height="match_parent"
+            android:background="@color/surface_secondary"
+            android:contentDescription="@string/loading_image"
+            android:scaleType="centerCrop"
+            tools:src="@drawable/comic_collage_halftone" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:padding="@dimen/space_sm">
+
+            <TextView
+                android:id="@+id/variant_universe"
+                style="@style/TextAppearance.Marvel.Label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/marvel_red"
+                tools:text="TERRA 1610" />
+
+            <TextView
+                android:id="@+id/variant_name"
+                style="@style/TextAppearance.Marvel.TitleSmall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                tools:text="Miles Morales" />
+
+            <TextView
+                android:id="@+id/variant_identity"
+                style="@style/TextAppearance.Marvel.BodySecondary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                tools:text="Homem Aranha" />
+        </LinearLayout>
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="@dimen/space_sm"
+            android:contentDescription="@null"
+            android:src="@drawable/ic_portal" />
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

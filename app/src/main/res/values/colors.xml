@@ -1,5 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="marvel_red">#D71920</color>
+    <color name="marvel_red_pressed">#B51218</color>
+    <color name="comic_yellow">#F5C542</color>
+    <color name="jarvis_blue">#1677FF</color>
+    <color name="success_green">#268A58</color>
+    <color name="warning_orange">#C66A12</color>
+    <color name="legend_gold">#C89121</color>
+    <color name="app_background">#F4EBDD</color>
+    <color name="surface_primary">#FFF9EF</color>
+    <color name="surface_secondary">#EDE3D3</color>
+    <color name="surface_elevated">#FFFFFFFF</color>
+    <color name="text_primary">#171717</color>
+    <color name="text_secondary">#5B554D</color>
+    <color name="text_on_accent">#FFFFFFFF</color>
+    <color name="outline_color">#80776C</color>
+    <color name="outline_subtle">#D8CCBB</color>
+    <color name="scrim_color">#99000000</color>
+    <color name="comic_ink_08">#14171717</color>
+    <color name="comic_ink_16">#29171717</color>
+    <color name="jarvis_glow">#331677FF</color>
+    <color name="transparent">#00000000</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 </resources>
