@@ -221,7 +221,9 @@ public final class DuelFragment extends Fragment {
         DuelCard card = collectible.getDuelCard();
         name.setText(user || reveal ? card.getName() : getString(R.string.duel_classified));
         rarity.setText(user || reveal ? card.getRarity() : "");
-        attribute.setText(user || reveal ? categoryLabel(selectedCategory()) : "");
+        attribute.setText(user || reveal
+                ? getString(categoryLabel(selectedCategory()))
+                : "");
         value.setText(String.valueOf(valueFor(card, selectedCategory())));
         value.setVisibility(user || reveal ? View.VISIBLE : View.INVISIBLE);
         image.setImageResource(user || reveal
