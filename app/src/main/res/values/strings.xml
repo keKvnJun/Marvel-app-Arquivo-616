@@ -64,6 +64,20 @@
     <string name="duel_alliances">Alianças</string>
     <string name="card_game_title">Cartas do Multiverso</string>
     <string name="card_game_subtitle">Abra pacotes, monte um deck de até três cartas e dispute rodadas rápidas.</string>
+    <string name="battle_best_of_three">MESA TÁTICA • MELHOR DE 3</string>
+    <string name="battle_rival_zone">ARQUIVO RIVAL</string>
+    <string name="battle_active_zone">CONFRONTO ATIVO</string>
+    <string name="battle_hand_zone">SUA MÃO</string>
+    <string name="battle_hand_hint">Toque em uma carta para colocá-la na mesa.</string>
+    <string name="battle_compare_attribute">ESCOLHA O ÍNDICE DA RODADA</string>
+    <string name="battle_rival_hidden_card">Carta rival ainda classificada</string>
+    <string name="battle_empty_slot">Espaço vazio</string>
+    <string name="battle_open_pack_short">ABRA UM PACOTE</string>
+    <string name="battle_open_pack_hint">Abra um pacote para montar sua mão e iniciar a missão.</string>
+    <string name="battle_ready">Mesa pronta. Escolha sua carta e o índice da rodada.</string>
+    <string name="battle_card_selected">%1$s entrou na mesa.</string>
+    <string name="battle_selected">selecionada</string>
+    <string name="battle_hand_card_description">Carta %1$s %2$s</string>
     <string name="card_game_disclosure">Os atributos são índices lúdicos do Arquivo 616 e não representam níveis oficiais da Marvel.</string>
     <string name="pack_title">Pacote classificado</string>
     <string name="pack_subtitle">Cada pacote contém três cartas. Novas cartas têm prioridade até completar a coleção.</string>
@@ -125,6 +139,7 @@
     <string name="archive_theme_system">Ativar tema escuro</string>
     <string name="loading_files">Acessando arquivos classificados…</string>
     <string name="splash_issue">EDIÇÃO DE ACESSO 616</string>
+    <string name="splash_subtitle">Heróis, histórias e arquivos do multiverso</string>
     <string name="splash_pow">POW!</string>
     <string name="splash_boom">BOOM!</string>
     <string name="splash_zap">ZAP!</string>
@@ -139,4 +154,10 @@
     <string name="empty_results_body">Tente outro nome ou remova alguns filtros.</string>
     <string name="comic_image_description">Imagem do personagem %1$s</string>
     <string name="shield_logo_description">Símbolo dos arquivos da S.H.I.E.L.D.</string>
+    <string name="pack_opening_description">Abrindo pacote classificado</string>
+    <string name="pack_opening_hint">Toque para revelar todas as cartas</string>
+    <string name="pack_opening_continue">Toque para guardar as cartas</string>
+    <string name="pack_opening_seal">ARQUIVO 616</string>
+    <string name="pack_opening_classified">S.H.I.E.L.D. • CLASSIFICADO</string>
+    <string name="pack_opening_revealed">Pacote aberto. Cartas reveladas.</string>
 </resources>

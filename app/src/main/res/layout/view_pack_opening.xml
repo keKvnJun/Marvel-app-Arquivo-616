@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <View
+        android:id="@+id/pack_opening_scrim"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#F20A0A0C"
+        android:importantForAccessibility="no" />
+
+    <View
+        android:id="@+id/pack_opening_aura"
+        android:layout_width="360dp"
+        android:layout_height="360dp"
+        android:layout_gravity="center"
+        android:background="@drawable/bg_pack_opening_aura"
+        android:importantForAccessibility="no" />
+
+    <FrameLayout
+        android:id="@+id/pack_card_stage"
+        android:layout_width="match_parent"
+        android:layout_height="380dp"
+        android:layout_gravity="center"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:paddingHorizontal="12dp" />
+
+    <FrameLayout
+        android:id="@+id/pack_envelope"
+        android:layout_width="236dp"
+        android:layout_height="340dp"
+        android:layout_gravity="center"
+        android:background="@drawable/bg_pack_envelope"
+        android:elevation="12dp"
+        android:padding="18dp">
+
+        <TextView
+            style="@style/TextAppearance.Marvel.Label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|center_horizontal"
+            android:background="@color/black"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="4dp"
+            android:text="@string/pack_opening_classified"
+            android:textColor="@color/comic_yellow" />
+
+        <ImageView
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="58dp"
+            android:contentDescription="@null"
+            android:src="@drawable/ic_shield"
+            app:tint="@color/white" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="52dp"
+            android:fontFamily="sans-serif-condensed"
+            android:gravity="center"
+            android:letterSpacing="0.06"
+            android:text="@string/pack_opening_seal"
+            android:textColor="@color/white"
+            android:textSize="30sp"
+            android:textStyle="bold|italic" />
+
+        <TextView
+            style="@style/TextAppearance.Marvel.Label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal"
+            android:layout_marginBottom="22dp"
+            android:background="@color/comic_yellow"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="5dp"
+            android:text="@string/pack_title"
+            android:textColor="@color/black" />
+
+        <View
+            android:id="@+id/pack_tear_strip"
+            android:layout_width="match_parent"
+            android:layout_height="34dp"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/bg_pack_tear_strip"
+            android:importantForAccessibility="no" />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/pack_opening_hint"
+        style="@style/TextAppearance.Marvel.Body"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="38dp"
+        android:background="@drawable/bg_pack_hint"
+        android:paddingHorizontal="14dp"
+        android:paddingVertical="8dp"
+        android:text="@string/pack_opening_hint"
+        android:textColor="@color/white" />
+
+</merge>

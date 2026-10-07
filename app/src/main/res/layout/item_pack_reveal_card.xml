@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Widget.Marvel.Card.Outlined"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:cardBackgroundColor="@color/surface_elevated"
+    app:cardCornerRadius="@dimen/radius_medium"
+    app:strokeColor="@color/comic_yellow"
+    app:strokeWidth="3dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="@dimen/space_xs">
+
+        <TextView
+            android:id="@+id/pack_reveal_rarity"
+            style="@style/TextAppearance.Marvel.Label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_red_label"
+            android:paddingHorizontal="6dp"
+            android:paddingVertical="3dp"
+            android:textColor="@color/text_on_red_label"
+            tools:text="RARIDADE ÉPICA" />
+
+        <ImageView
+            android:id="@+id/pack_reveal_image"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="@dimen/space_xs"
+            android:layout_weight="1"
+            android:contentDescription="@null"
+            android:scaleType="centerCrop"
+            android:src="@drawable/comic_collage_muted"
+            tools:src="@drawable/comic_collage_halftone" />
+
+        <TextView
+            android:id="@+id/pack_reveal_name"
+            style="@style/TextAppearance.Marvel.TitleSmall"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_xs"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="2"
+            android:minHeight="44dp"
+            tools:text="Miles Morales" />
+
+        <TextView
+            android:id="@+id/pack_reveal_stats"
+            style="@style/TextAppearance.Marvel.Label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="@color/text_secondary"
+            tools:text="V 88  H 92  P 90  A 84" />
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>
