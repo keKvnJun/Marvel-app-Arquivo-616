@@ -6,17 +6,14 @@
     android:layout_height="match_parent"
     android:background="@color/app_background">
 
-    <androidx.core.widget.NestedScrollView
+    <LinearLayout
         android:id="@+id/duel_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="@dimen/screen_padding">
+        android:paddingHorizontal="@dimen/space_sm"
+        android:paddingTop="@dimen/space_xs"
+        android:paddingBottom="@dimen/space_xs">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -31,13 +28,13 @@
                 android:orientation="vertical">
 
                 <TextView
-                    style="@style/TextAppearance.Marvel.Headline"
+                    style="@style/TextAppearance.Marvel.Title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/card_game_title" />
 
                 <TextView
-                    style="@style/TextAppearance.Marvel.BodySecondary"
+                    style="@style/TextAppearance.Marvel.Label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/battle_best_of_three" />
@@ -49,17 +46,47 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_red_label"
-                android:textColor="@color/text_on_red_label"
-                tools:text="DECK 3/3" />
+                android:textColor="@color/white"
+                tools:text="COLEÇÃO 8 • DECK 3/3" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_sm"
+            android:layout_marginTop="@dimen/space_xxs"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/pack_status_text"
+                style="@style/TextAppearance.Marvel.BodySecondary"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="@string/pack_ready" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/open_pack_button"
+                style="@style/Widget.Marvel.Button.Secondary"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:minHeight="40dp"
+                android:text="@string/pack_open_compact"
+                app:icon="@drawable/ic_cards" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/battle_table"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="@dimen/space_xs"
+            android:layout_weight="1"
             android:background="@drawable/bg_battle_table"
+            android:gravity="center_horizontal"
             android:orientation="vertical"
-            android:padding="@dimen/space_sm">
+            android:padding="@dimen/space_xs">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -84,168 +111,163 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/space_xs"
+                android:layout_height="54dp"
                 android:gravity="center"
                 android:orientation="horizontal">
 
                 <ImageView
                     android:id="@+id/opponent_slot_one"
-                    android:layout_width="48dp"
-                    android:layout_height="68dp"
+                    android:layout_width="36dp"
+                    android:layout_height="42dp"
                     android:layout_marginHorizontal="@dimen/space_xs"
                     android:contentDescription="@string/battle_rival_hidden_card"
-                    android:padding="5dp"
                     android:src="@drawable/bg_battle_card_back" />
 
                 <ImageView
                     android:id="@+id/opponent_slot_two"
-                    android:layout_width="48dp"
-                    android:layout_height="68dp"
+                    android:layout_width="36dp"
+                    android:layout_height="42dp"
                     android:layout_marginHorizontal="@dimen/space_xs"
                     android:contentDescription="@string/battle_rival_hidden_card"
-                    android:padding="5dp"
                     android:src="@drawable/bg_battle_card_back" />
 
                 <ImageView
                     android:id="@+id/opponent_slot_three"
-                    android:layout_width="48dp"
-                    android:layout_height="68dp"
+                    android:layout_width="36dp"
+                    android:layout_height="42dp"
                     android:layout_marginHorizontal="@dimen/space_xs"
                     android:contentDescription="@string/battle_rival_hidden_card"
-                    android:padding="5dp"
                     android:src="@drawable/bg_battle_card_back" />
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/duel_score_text"
-                style="@style/TextAppearance.Marvel.TitleSmall"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="@dimen/space_xs"
-                tools:text="Você 0 × 0 Arquivo" />
-
-            <TextView
-                style="@style/TextAppearance.Marvel.Label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="@dimen/space_sm"
-                android:text="@string/battle_active_zone" />
+            <include
+                android:id="@+id/opponent_duel_card"
+                layout="@layout/item_battle_active_card"
+                android:layout_width="260dp"
+                android:layout_height="96dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/space_xs"
-                android:gravity="center"
-                android:orientation="horizontal"
-                android:weightSum="2">
+                android:layout_marginVertical="@dimen/space_xxs"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
-                <include
-                    android:id="@+id/player_duel_card"
-                    layout="@layout/item_duel_card"
-                    android:layout_width="0dp"
+                <TextView
+                    android:id="@+id/duel_score_text"
+                    style="@style/TextAppearance.Marvel.TitleSmall"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/space_xs"
-                    android:layout_weight="1" />
+                    android:background="@drawable/bg_red_label"
+                    android:textColor="@color/white"
+                    tools:text="Você 1 × 0 Arquivo" />
 
-                <include
-                    android:id="@+id/opponent_duel_card"
-                    layout="@layout/item_duel_card"
+                <TextView
+                    android:id="@+id/duel_result_banner"
+                    style="@style/TextAppearance.Marvel.BodySecondary"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/space_xs"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_duel_slot"
+                    android:ellipsize="end"
+                    android:gravity="center"
+                    android:maxLines="2"
+                    android:minHeight="44dp"
+                    android:padding="@dimen/space_xs"
+                    tools:text="Mesa pronta. Escolha sua carta." />
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/duel_result_banner"
-                style="@style/TextAppearance.Marvel.TitleSmall"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/space_sm"
-                android:background="@drawable/bg_duel_slot"
-                android:gravity="center"
-                android:minHeight="52dp"
-                android:padding="@dimen/space_sm"
-                tools:text="Mesa pronta. Escolha uma carta e um atributo." />
+            <include
+                android:id="@+id/player_duel_card"
+                layout="@layout/item_battle_active_card"
+                android:layout_width="260dp"
+                android:layout_height="96dp" />
 
-            <TextView
-                style="@style/TextAppearance.Marvel.Label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/space_md"
-                android:text="@string/battle_compare_attribute" />
-
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/duel_attribute_group"
+            <HorizontalScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/space_xxs"
-                app:selectionRequired="true"
-                app:singleSelection="true">
+                android:fillViewport="true"
+                android:scrollbars="none">
 
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/attribute_powers_chip"
-                    style="@style/Widget.Marvel.Chip"
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/duel_attribute_group"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:checked="true"
-                    android:text="@string/duel_powers"
-                    app:chipIcon="@drawable/ic_bolt" />
+                    app:selectionRequired="true"
+                    app:singleLine="true"
+                    app:singleSelection="true">
 
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/attribute_experience_chip"
-                    style="@style/Widget.Marvel.Chip"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/duel_experience"
-                    app:chipIcon="@drawable/ic_calendar" />
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/attribute_powers_chip"
+                        style="@style/Widget.Marvel.Chip"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="@string/duel_powers"
+                        app:chipIcon="@drawable/ic_bolt" />
 
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/attribute_appearances_chip"
-                    style="@style/Widget.Marvel.Chip"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/duel_appearances"
-                    app:chipIcon="@drawable/ic_comic" />
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/attribute_experience_chip"
+                        style="@style/Widget.Marvel.Chip"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/duel_experience"
+                        app:chipIcon="@drawable/ic_calendar" />
 
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/attribute_impact_chip"
-                    style="@style/Widget.Marvel.Chip"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/duel_impact"
-                    app:chipIcon="@drawable/ic_shield" />
-            </com.google.android.material.chip.ChipGroup>
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/attribute_appearances_chip"
+                        style="@style/Widget.Marvel.Chip"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/duel_appearances"
+                        app:chipIcon="@drawable/ic_comic" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/attribute_impact_chip"
+                        style="@style/Widget.Marvel.Chip"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/duel_impact"
+                        app:chipIcon="@drawable/ic_shield" />
+                </com.google.android.material.chip.ChipGroup>
+            </HorizontalScrollView>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/start_duel_button"
                 style="@style/Widget.Marvel.Button.Primary"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/space_sm"
+                android:layout_height="44dp"
+                android:minHeight="44dp"
                 android:text="@string/duel_start"
                 app:icon="@drawable/ic_bolt" />
-
-            <TextView
-                style="@style/TextAppearance.Marvel.Label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/space_md"
-                android:text="@string/battle_hand_zone" />
-
-            <TextView
-                style="@style/TextAppearance.Marvel.BodySecondary"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/battle_hand_hint" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/space_xs"
+                android:layout_marginTop="@dimen/space_xxs"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/TextAppearance.Marvel.Label"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/battle_hand_zone" />
+
+                <TextView
+                    style="@style/TextAppearance.Marvel.BodySecondary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/battle_hand_hint_compact" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_xxs"
                 android:orientation="horizontal"
                 android:weightSum="3">
 
@@ -275,116 +297,88 @@
             </LinearLayout>
 
             <TextView
-                style="@style/TextAppearance.Marvel.BodySecondary"
+                style="@style/TextAppearance.Marvel.Label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/space_sm"
+                android:layout_marginTop="@dimen/space_xxs"
+                android:ellipsize="end"
                 android:gravity="center"
-                android:text="@string/card_game_disclosure" />
+                android:maxLines="1"
+                android:text="@string/card_game_disclosure_short" />
         </LinearLayout>
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/mission_result_panel"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/scrim_color"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone"
+        tools:visibility="visible">
 
         <com.google.android.material.card.MaterialCardView
-            style="@style/Widget.Marvel.Card.Outlined"
-            android:layout_width="match_parent"
+            style="@style/Widget.Marvel.Card"
+            android:layout_width="300dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_md"
-            android:layout_marginBottom="@dimen/space_lg">
+            android:layout_gravity="center"
+            android:elevation="18dp"
+            app:cardCornerRadius="@dimen/radius_medium">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:orientation="vertical"
-                android:padding="@dimen/space_sm">
+                android:padding="@dimen/space_md">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <TextView
+                    style="@style/TextAppearance.Marvel.Label"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                    android:text="@string/mission_result_label"
+                    android:textColor="@color/marvel_red" />
 
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
+                <ImageView
+                    android:id="@+id/mission_result_image"
+                    android:layout_width="140dp"
+                    android:layout_height="120dp"
+                    android:layout_marginTop="@dimen/space_xs"
+                    android:contentDescription="@string/card_art_description"
+                    android:scaleType="centerCrop"
+                    tools:src="@drawable/comic_collage_halftone" />
 
-                        <TextView
-                            style="@style/TextAppearance.Marvel.TitleSmall"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/pack_title" />
-
-                        <TextView
-                            android:id="@+id/pack_status_text"
-                            style="@style/TextAppearance.Marvel.BodySecondary"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/pack_ready" />
-                    </LinearLayout>
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/open_pack_button"
-                        style="@style/Widget.Marvel.Button.Secondary"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/pack_open"
-                        app:icon="@drawable/ic_cards" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/pack_results"
+                <TextView
+                    android:id="@+id/mission_result_title"
+                    style="@style/TextAppearance.Marvel.Title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/space_sm"
                     android:gravity="center"
-                    android:orientation="horizontal"
-                    android:visibility="gone"
-                    tools:visibility="visible">
+                    tools:text="Missão concluída" />
 
-                    <TextView
-                        android:id="@+id/pack_result_one"
-                        style="@style/TextAppearance.Marvel.Label"
-                        android:layout_width="0dp"
-                        android:layout_height="64dp"
-                        android:layout_marginEnd="@dimen/space_xxs"
-                        android:layout_weight="1"
-                        android:background="@drawable/bg_duel_slot"
-                        android:gravity="center"
-                        android:padding="@dimen/space_xxs"
-                        tools:text="RARA&#10;Spider-Man" />
+                <TextView
+                    android:id="@+id/mission_result_score"
+                    style="@style/TextAppearance.Marvel.Headline"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/marvel_red"
+                    tools:text="2 × 1" />
 
-                    <TextView
-                        android:id="@+id/pack_result_two"
-                        style="@style/TextAppearance.Marvel.Label"
-                        android:layout_width="0dp"
-                        android:layout_height="64dp"
-                        android:layout_marginHorizontal="@dimen/space_xxs"
-                        android:layout_weight="1"
-                        android:background="@drawable/bg_duel_slot"
-                        android:gravity="center"
-                        android:padding="@dimen/space_xxs"
-                        tools:text="ÉPICA&#10;Storm" />
-
-                    <TextView
-                        android:id="@+id/pack_result_three"
-                        style="@style/TextAppearance.Marvel.Label"
-                        android:layout_width="0dp"
-                        android:layout_height="64dp"
-                        android:layout_marginStart="@dimen/space_xxs"
-                        android:layout_weight="1"
-                        android:background="@drawable/bg_duel_slot"
-                        android:gravity="center"
-                        android:padding="@dimen/space_xxs"
-                        tools:text="LENDÁRIA&#10;Thor" />
-                </LinearLayout>
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/mission_continue_button"
+                    style="@style/Widget.Marvel.Button.Primary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_xs"
+                    android:text="@string/mission_result_continue" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
-    </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
+    </FrameLayout>
 
     <com.example.marvel_app.ui.widget.PackOpeningView
         android:id="@+id/pack_opening_overlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
-
 </FrameLayout>

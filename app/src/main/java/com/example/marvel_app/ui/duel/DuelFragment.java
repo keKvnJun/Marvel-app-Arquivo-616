@@ -10,7 +10,9 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.activity.OnBackPressedCallback;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.ColorUtils;
 import androidx.fragment.app.Fragment;
 
 import com.example.marvel_app.R;
@@ -54,6 +56,12 @@ public final class DuelFragment extends Fragment {
     private ChipGroup attributeGroup;
     private TextView resultBanner;
     private PackOpeningView packOpeningView;
+    private View battleTable;
+    private View missionResultPanel;
+    private ImageView missionResultImage;
+    private TextView missionResultTitle;
+    private TextView missionResultScore;
+    private MaterialButton missionContinueButton;
     private View[] handSlots;
     private ImageView[] opponentSlots;
     private CollectibleCard player;
@@ -81,6 +89,12 @@ public final class DuelFragment extends Fragment {
         attributeGroup = view.findViewById(R.id.duel_attribute_group);
         resultBanner = view.findViewById(R.id.duel_result_banner);
         packOpeningView = view.findViewById(R.id.pack_opening_overlay);
+        battleTable = view.findViewById(R.id.battle_table);
+        missionResultPanel = view.findViewById(R.id.mission_result_panel);
+        missionResultImage = view.findViewById(R.id.mission_result_image);
+        missionResultTitle = view.findViewById(R.id.mission_result_title);
+        missionResultScore = view.findViewById(R.id.mission_result_score);
+        missionContinueButton = view.findViewById(R.id.mission_continue_button);
         handSlots = new View[]{
                 view.findViewById(R.id.hand_card_one),
                 view.findViewById(R.id.hand_card_two),
@@ -100,11 +114,36 @@ public final class DuelFragment extends Fragment {
             int cardIndex = index;
             handSlots[index].setOnClickListener(card -> selectPlayerCard(cardIndex));
         }
-        attributeGroup.setOnCheckedStateChangeListener(
-                (group, checkedIds) -> refreshTable(roundRevealed));
+        attributeGroup.setOnCheckedStateChangeListener((group, checkedIds) -> {
+            refreshTable(roundRevealed);
+            updateArenaTheme();
+        });
+        missionContinueButton.setOnClickListener(button -> closeMissionResult());
+        requireActivity().getOnBackPressedDispatcher().addCallback(
+                getViewLifecycleOwner(),
+                new OnBackPressedCallback(true) {
+                    @Override
+                    public void handleOnBackPressed() {
+                        if (packOpeningView != null
+                                && packOpeningView.getVisibility() == View.VISIBLE) {
+                            packOpeningView.announceForAccessibility(
+                                    getString(R.string.pack_opening_finish_first));
+                            return;
+                        }
+                        if (missionResultPanel != null
+                                && missionResultPanel.getVisibility() == View.VISIBLE) {
+                            closeMissionResult();
+                            return;
+                        }
+                        setEnabled(false);
+                        requireActivity().getOnBackPressedDispatcher().onBackPressed();
+                    }
+                }
+        );
 
         refreshCollectionSummary();
         prepareRound();
+        updateArenaTheme();
         loadCardArtwork();
     }
 
@@ -131,32 +170,13 @@ public final class DuelFragment extends Fragment {
         int newCards = collectionStore.addPack(pack);
         collectionStore.fillDeckFromCollection();
 
-        View packPanel = root.findViewById(R.id.pack_results);
-        packPanel.setVisibility(View.GONE);
-        int[] resultIds = {R.id.pack_result_one, R.id.pack_result_two, R.id.pack_result_three};
-        for (int index = 0; index < resultIds.length; index++) {
-            TextView cardView = root.findViewById(resultIds[index]);
-            if (index < pack.size()) {
-                CollectibleCard card = pack.get(index);
-                cardView.setText(getString(R.string.pack_card_result,
-                        card.getDuelCard().getRarity(), card.getCharacter().getName()));
-                cardView.setVisibility(View.VISIBLE);
-            } else {
-                cardView.setVisibility(View.GONE);
-            }
-        }
         ((TextView) root.findViewById(R.id.pack_status_text)).setText(
                 getResources().getQuantityString(R.plurals.pack_new_cards, newCards, newCards));
         refreshCollectionSummary();
         resetMatch();
 
         packOpeningView.setCards(createPackRevealCards(pack));
-        packOpeningView.play(() -> {
-            if (root == null) return;
-            packPanel.setVisibility(View.VISIBLE);
-            packPanel.setAlpha(0f);
-            packPanel.animate().alpha(1f).setDuration(220L).start();
-        });
+        packOpeningView.play(null);
     }
 
     private List<View> createPackRevealCards(List<CollectibleCard> pack) {
@@ -232,10 +252,12 @@ public final class DuelFragment extends Fragment {
             showResult(roundMessage + "\n" + matchResultMessage(), styleForMatch(), true);
             duelButton.setText(R.string.duel_play_again);
             duelButton.setEnabled(true);
+            showMissionResult();
         }
     }
 
     private void resetMatch() {
+        if (missionResultPanel != null) missionResultPanel.setVisibility(View.GONE);
         round = 1;
         playerScore = 0;
         opponentScore = 0;
@@ -388,6 +410,56 @@ public final class DuelFragment extends Fragment {
                 : getString(R.string.battle_rival_hidden_card));
     }
 
+    private void updateArenaTheme() {
+        if (battleTable == null) return;
+        int base = ContextCompat.getColor(requireContext(), R.color.surface_secondary);
+        int accent;
+        switch (selectedCategory()) {
+            case EDITORIAL_HISTORY:
+                accent = ContextCompat.getColor(requireContext(), R.color.jarvis_blue);
+                break;
+            case PRESENCE:
+                accent = ContextCompat.getColor(requireContext(), R.color.success_green);
+                break;
+            case MULTIVERSE_INDEX:
+                accent = ContextCompat.getColor(requireContext(), R.color.comic_yellow);
+                break;
+            default:
+                accent = ContextCompat.getColor(requireContext(), R.color.marvel_red);
+        }
+        battleTable.setBackgroundTintList(ColorStateList.valueOf(
+                ColorUtils.blendARGB(base, accent, 0.14f)));
+    }
+
+    private void showMissionResult() {
+        CollectibleCard highlight = playerScore >= opponentScore ? player : opponent;
+        missionResultTitle.setText(matchResultMessage());
+        missionResultScore.setText(getString(
+                R.string.mission_result_score, playerScore, opponentScore));
+        loadArtwork(missionResultImage, highlight, true);
+        setPackModal(true);
+        missionResultPanel.setVisibility(View.VISIBLE);
+        missionResultPanel.setAlpha(0f);
+        missionResultPanel.setScaleX(0.88f);
+        missionResultPanel.setScaleY(0.88f);
+        missionResultPanel.animate()
+                .alpha(1f)
+                .scaleX(1f)
+                .scaleY(1f)
+                .setDuration(240L)
+                .start();
+        missionContinueButton.requestFocus();
+        missionResultPanel.announceForAccessibility(matchResultMessage());
+    }
+
+    private void closeMissionResult() {
+        if (missionResultPanel == null) return;
+        missionResultPanel.setVisibility(View.GONE);
+        setPackModal(false);
+        resetMatch();
+        if (duelButton != null) duelButton.requestFocus();
+    }
+
     private void setPackModal(boolean visible) {
         if (root != null) {
             View content = root.findViewById(R.id.duel_content);
@@ -528,6 +600,7 @@ public final class DuelFragment extends Fragment {
             cardArtCall = null;
         }
         if (resultBanner != null) resultBanner.animate().cancel();
+        if (missionResultPanel != null) missionResultPanel.animate().cancel();
         if (packOpeningView != null) packOpeningView.dismiss();
         root = null;
         duelButton = null;
@@ -535,6 +608,12 @@ public final class DuelFragment extends Fragment {
         attributeGroup = null;
         resultBanner = null;
         packOpeningView = null;
+        battleTable = null;
+        missionResultPanel = null;
+        missionResultImage = null;
+        missionResultTitle = null;
+        missionResultScore = null;
+        missionContinueButton = null;
         handSlots = null;
         opponentSlots = null;
         collectionStore = null;

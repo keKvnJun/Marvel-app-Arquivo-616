@@ -20,7 +20,7 @@
         <ImageView
             android:id="@+id/hand_card_image"
             android:layout_width="match_parent"
-            android:layout_height="72dp"
+            android:layout_height="40dp"
             android:contentDescription="@null"
             android:scaleType="centerCrop"
             tools:src="@drawable/comic_collage_halftone" />
@@ -34,7 +34,7 @@
             android:ellipsize="end"
             android:gravity="center"
             android:maxLines="2"
-            android:minHeight="32dp"
+            android:minHeight="28dp"
             tools:text="Spider-Man" />
 
         <TextView

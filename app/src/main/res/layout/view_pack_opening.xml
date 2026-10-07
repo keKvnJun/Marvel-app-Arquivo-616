@@ -80,13 +80,19 @@
             android:text="@string/pack_title"
             android:textColor="@color/black" />
 
-        <View
+        <TextView
             android:id="@+id/pack_tear_strip"
             android:layout_width="match_parent"
             android:layout_height="34dp"
             android:layout_gravity="center_vertical"
             android:background="@drawable/bg_pack_tear_strip"
-            android:importantForAccessibility="no" />
+            android:fontFamily="sans-serif-condensed"
+            android:gravity="center"
+            android:importantForAccessibility="no"
+            android:text="@string/pack_tear_strip_label"
+            android:textColor="@color/black"
+            android:textSize="11sp"
+            android:textStyle="bold" />
     </FrameLayout>
 
     <TextView
