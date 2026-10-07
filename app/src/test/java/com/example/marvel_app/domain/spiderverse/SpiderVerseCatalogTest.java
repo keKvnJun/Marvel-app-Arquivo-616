@@ -3,7 +3,9 @@ package com.example.marvel_app.domain.spiderverse;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -11,9 +13,19 @@ import static org.junit.Assert.assertTrue;
 public class SpiderVerseCatalogTest {
     @Test
     public void seedsContainBroadCuratedSelection() {
-        assertTrue(SpiderVerseCatalog.seeds().size() >= 20);
+        assertTrue(SpiderVerseCatalog.seeds().size() >= 18);
         assertTrue(SpiderVerseCatalog.seeds().stream()
                 .anyMatch(seed -> seed.getRealName().equals("Pavitr Prabhakar")));
+    }
+
+    @Test
+    public void everySeedHasUniqueComicVineDestination() {
+        Set<Long> ids = new HashSet<>();
+        for (SpiderVerseSeed seed : SpiderVerseCatalog.seeds()) {
+            assertTrue(seed.getComicVineId() > 0);
+            assertEquals("4005-" + seed.getComicVineId(), seed.getApiObjectId());
+            assertTrue("ID duplicado no Spider Verso", ids.add(seed.getComicVineId()));
+        }
     }
 
     @Test

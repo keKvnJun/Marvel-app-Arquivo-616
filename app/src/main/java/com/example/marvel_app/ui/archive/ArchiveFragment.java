@@ -22,6 +22,9 @@ import com.example.marvel_app.data.local.HistoryStore;
 import com.example.marvel_app.data.local.SharedPreferencesCardStorage;
 import com.example.marvel_app.data.local.ThemeStore;
 import com.example.marvel_app.data.model.CharacterCardData;
+import com.example.marvel_app.data.model.CharacterDto;
+import com.example.marvel_app.data.repository.CharacterRepository;
+import com.example.marvel_app.domain.cards.CardCatalog;
 import com.example.marvel_app.domain.cards.CardCollectionState;
 import com.example.marvel_app.domain.cards.CardCollectionStore;
 import com.example.marvel_app.domain.cards.CollectibleCard;
@@ -32,6 +35,9 @@ import com.google.android.material.materialswitch.MaterialSwitch;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.List;
+import java.util.Collections;
+
+import retrofit2.Call;
 
 public final class ArchiveFragment extends Fragment implements CharacterAdapter.Listener {
     private FavoriteStore favorites;
@@ -46,6 +52,8 @@ public final class ArchiveFragment extends Fragment implements CharacterAdapter.
     private TextView collectionSummary;
     private int selectedTab;
     private int shieldTaps;
+    private List<CharacterDto> collectibleCharacters = Collections.emptyList();
+    private Call<?> collectibleImagesCall;
 
     @Nullable
     @Override
@@ -68,6 +76,15 @@ public final class ArchiveFragment extends Fragment implements CharacterAdapter.
         emptyTitle = view.findViewById(R.id.archive_empty_title);
         emptyBody = view.findViewById(R.id.archive_empty_body);
         collectionSummary = view.findViewById(R.id.archive_collection_summary);
+        collectibleImagesCall = CharacterRepository.getInstance(requireContext())
+                .loadCharactersByIds(CardCatalog.comicVineIds(), result -> {
+                    if (result.isSuccess() && list != null) {
+                        collectibleCharacters = result.getData();
+                        if (selectedTab == 2) {
+                            refresh();
+                        }
+                    }
+                });
 
         TabLayout tabs = view.findViewById(R.id.archive_tabs);
         tabs.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -108,7 +125,8 @@ public final class ArchiveFragment extends Fragment implements CharacterAdapter.
     private void refresh() {
         if (selectedTab == 2) {
             CardCollectionState state = cardCollection.load();
-            List<CollectibleCard> cards = cardCollection.ownedCards();
+            List<CollectibleCard> cards = CardCatalog.hydrate(
+                    cardCollection.ownedCards(), collectibleCharacters);
             list.setAdapter(collectionAdapter);
             collectionAdapter.submit(cards, state.getDeckIds());
             collectionSummary.setVisibility(View.VISIBLE);
@@ -175,6 +193,11 @@ public final class ArchiveFragment extends Fragment implements CharacterAdapter.
 
     @Override
     public void onDestroyView() {
+        if (collectibleImagesCall != null) {
+            collectibleImagesCall.cancel();
+            collectibleImagesCall = null;
+        }
+        collectibleCharacters = Collections.emptyList();
         favorites = null;
         history = null;
         characterAdapter = null;

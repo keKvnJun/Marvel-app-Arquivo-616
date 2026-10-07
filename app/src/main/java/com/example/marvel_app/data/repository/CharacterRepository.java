@@ -15,11 +15,12 @@ import com.example.marvel_app.domain.search.CharacterSearchQueryExpander;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.HashSet;
 import java.util.Set;
 
 import retrofit2.Call;
@@ -83,6 +84,9 @@ public final class CharacterRepository {
             "api_detail_url,site_detail_url,count_of_issue_appearances,image,publisher," +
             "origin,first_appeared_in_issue,powers,teams,character_friends,character_enemies";
 
+    private static final String FEATURED_MARVEL_IDS =
+            "1443|1455|79420|1477|1472|2268|2267|1440|1442|3200";
+
     private static volatile CharacterRepository instance;
 
     private final ComicVineService service;
@@ -122,7 +126,52 @@ public final class CharacterRepository {
                 CARD_FIELDS,
                 PAGE_SIZE,
                 Math.max(0, offset),
-                "count_of_issue_appearances:desc"
+                "count_of_issue_appearances:desc",
+                "id:" + FEATURED_MARVEL_IDS
+        );
+        enqueueCharacterList(call, callback);
+        return call;
+    }
+
+    public Call<ApiResponse<List<CharacterDto>>> loadCharactersByIds(
+            List<Long> characterIds,
+            RepositoryCallback<List<CharacterDto>> callback
+    ) {
+        if (characterIds == null || characterIds.isEmpty()) {
+            callback.onResult(RepositoryResult.success(Collections.emptyList()));
+            return null;
+        }
+        if (!isConfigured()) {
+            callback.onResult(RepositoryResult.notConfigured(
+                    "Adicione COMIC_VINE_API_KEY ao arquivo local.properties."
+            ));
+            return null;
+        }
+
+        LinkedHashSet<Long> uniqueIds = new LinkedHashSet<>();
+        for (Long id : characterIds) {
+            if (id != null && id > 0) {
+                uniqueIds.add(id);
+            }
+        }
+        if (uniqueIds.isEmpty()) {
+            callback.onResult(RepositoryResult.success(Collections.emptyList()));
+            return null;
+        }
+
+        StringBuilder filter = new StringBuilder("id:");
+        for (Long id : uniqueIds) {
+            if (filter.length() > 3) {
+                filter.append('|');
+            }
+            filter.append(id);
+        }
+        Call<ApiResponse<List<CharacterDto>>> call = service.getCharacters(
+                CARD_FIELDS,
+                Math.min(uniqueIds.size(), 100),
+                0,
+                null,
+                filter.toString()
         );
         enqueueCharacterList(call, callback);
         return call;

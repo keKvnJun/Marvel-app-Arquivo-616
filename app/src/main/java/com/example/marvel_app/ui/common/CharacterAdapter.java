@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.marvel_app.R;
 import com.example.marvel_app.data.local.FavoriteStore;
 import com.example.marvel_app.data.model.CharacterCardData;
@@ -74,10 +75,13 @@ public final class CharacterAdapter extends ListAdapter<CharacterCardData, Chara
         Glide.with(holder.image)
                 .load(item.getImageUrl().isEmpty() ? R.drawable.comic_collage_muted : item.getImageUrl())
                 .centerCrop()
+                .thumbnail(0.15f)
+                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                .dontAnimate()
                 .placeholder(R.drawable.comic_collage_muted)
                 .error(R.drawable.comic_collage_muted)
                 .into(holder.image);
-        holder.image.setContentDescription(null);
+        holder.image.setContentDescription(item.getName());
         if (holder.appearances != null) {
             holder.appearances.setText(String.valueOf(item.getIssueAppearances()));
         }

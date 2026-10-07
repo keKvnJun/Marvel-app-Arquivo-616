@@ -18,7 +18,8 @@ public interface ComicVineService {
             @Query("field_list") String fieldList,
             @Query("limit") int limit,
             @Query("offset") int offset,
-            @Query("sort") String sort
+            @Query("sort") String sort,
+            @Query("filter") String filter
     );
 
     @GET("search/")

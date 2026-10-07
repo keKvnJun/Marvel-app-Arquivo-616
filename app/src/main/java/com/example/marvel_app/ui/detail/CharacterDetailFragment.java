@@ -34,6 +34,8 @@ public final class CharacterDetailFragment extends Fragment {
     private MaterialButton favoriteButton;
     private ReferenceAdapter teamsAdapter;
     private ReferenceAdapter appearancesAdapter;
+    private String displayNameOverride = "";
+    private String realNameOverride = "";
 
     @Nullable
     @Override
@@ -45,6 +47,8 @@ public final class CharacterDetailFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         Bundle args = getArguments() == null ? Bundle.EMPTY : getArguments();
+        displayNameOverride = args.getString("displayNameOverride", "");
+        realNameOverride = args.getString("realNameOverride", "");
         card = new CharacterCardData(
                 args.getLong("characterId"), args.getString("objectId", ""),
                 args.getString("name", ""), args.getString("realName", ""),
@@ -95,10 +99,19 @@ public final class CharacterDetailFragment extends Fragment {
     }
 
     private void bindCharacter(View view, CharacterDto character) {
-        card = CharacterCardData.from(character);
-        ((TextView) view.findViewById(R.id.detail_character_name)).setText(character.getName());
+        CharacterCardData remoteCard = CharacterCardData.from(character);
+        card = new CharacterCardData(
+                remoteCard.getId(),
+                remoteCard.getApiObjectId(),
+                displayNameOverride.isEmpty() ? remoteCard.getName() : displayNameOverride,
+                realNameOverride.isEmpty() ? remoteCard.getRealName() : realNameOverride,
+                remoteCard.getImageUrl(),
+                remoteCard.getPublisherName(),
+                remoteCard.getIssueAppearances()
+        );
+        ((TextView) view.findViewById(R.id.detail_character_name)).setText(card.getName());
         ((TextView) view.findViewById(R.id.detail_identity)).setText(
-                character.getRealName().isEmpty() ? "Identidade não catalogada" : character.getRealName());
+                card.getRealName().isEmpty() ? "Identidade não catalogada" : card.getRealName());
         TextView description = view.findViewById(R.id.detail_description);
         String raw = !character.getDeck().isEmpty() ? character.getDeck() : character.getDescription();
         if (raw.length() > 5000) raw = raw.substring(0, 5000);
@@ -125,7 +138,7 @@ public final class CharacterDetailFragment extends Fragment {
                 ? java.util.Collections.emptyList()
                 : java.util.Collections.singletonList(character.getFirstAppearedInIssue()));
         ((ImageView) view.findViewById(R.id.detail_character_image)).setContentDescription(
-                getString(R.string.comic_image_description, character.getName()));
+                getString(R.string.comic_image_description, card.getName()));
         updateFavoriteIcon();
         new HistoryStore(requireContext()).record(card);
     }
@@ -154,6 +167,8 @@ public final class CharacterDetailFragment extends Fragment {
         favoriteButton = null;
         teamsAdapter = null;
         appearancesAdapter = null;
+        displayNameOverride = "";
+        realNameOverride = "";
         super.onDestroyView();
     }
 }

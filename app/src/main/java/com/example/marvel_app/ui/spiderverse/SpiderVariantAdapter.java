@@ -9,16 +9,25 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.marvel_app.R;
+import com.example.marvel_app.data.model.CharacterCardData;
+import com.example.marvel_app.data.model.CharacterDto;
 import com.example.marvel_app.domain.spiderverse.SpiderVerseSeed;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public final class SpiderVariantAdapter extends RecyclerView.Adapter<SpiderVariantAdapter.Holder> {
-    public interface Listener { void onSelected(SpiderVerseSeed seed); }
+    public interface Listener {
+        void onSelected(SpiderVerseSeed seed, CharacterCardData character);
+    }
 
     private final List<SpiderVerseSeed> items;
     private final Listener listener;
+    private final Map<Long, CharacterCardData> charactersById = new HashMap<>();
 
     public SpiderVariantAdapter(List<SpiderVerseSeed> items, Listener listener) {
         this.items = items;
@@ -38,9 +47,40 @@ public final class SpiderVariantAdapter extends RecyclerView.Adapter<SpiderVaria
         holder.name.setText(item.getDisplayName());
         holder.identity.setText(item.getRealName());
         holder.universe.setText(item.getUniverse().toUpperCase());
-        holder.image.setImageResource(position % 2 == 0
-                ? R.drawable.comic_collage_halftone : R.drawable.comic_collage_muted);
-        holder.itemView.setOnClickListener(view -> listener.onSelected(item));
+        CharacterCardData character = charactersById.get(item.getComicVineId());
+        String imageUrl = character == null ? "" : character.getImageUrl();
+        Glide.with(holder.image)
+                .load(imageUrl.isEmpty() ? R.drawable.comic_collage_halftone : imageUrl)
+                .centerCrop()
+                .thumbnail(0.15f)
+                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                .dontAnimate()
+                .placeholder(R.drawable.comic_collage_halftone)
+                .error(R.drawable.comic_collage_muted)
+                .into(holder.image);
+        holder.image.setContentDescription(item.getDisplayName());
+        CharacterCardData navigationCard = new CharacterCardData(
+                item.getComicVineId(),
+                item.getApiObjectId(),
+                item.getDisplayName(),
+                item.getRealName(),
+                character == null ? "" : character.getImageUrl(),
+                "Marvel",
+                character == null ? 0 : character.getIssueAppearances()
+        );
+        holder.itemView.setOnClickListener(view -> listener.onSelected(item, navigationCard));
+    }
+
+    public void submitCharacters(List<CharacterDto> characters) {
+        charactersById.clear();
+        if (characters != null) {
+            for (CharacterDto character : characters) {
+                if (character != null) {
+                    charactersById.put(character.getId(), CharacterCardData.from(character));
+                }
+            }
+        }
+        notifyDataSetChanged();
     }
 
     @Override

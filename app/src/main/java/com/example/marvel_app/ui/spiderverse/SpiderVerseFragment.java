@@ -8,15 +8,28 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.marvel_app.R;
+import com.example.marvel_app.data.model.CharacterCardData;
+import com.example.marvel_app.data.repository.CharacterRepository;
 import com.example.marvel_app.domain.spiderverse.SpiderVerseCatalog;
 import com.example.marvel_app.domain.spiderverse.SpiderVerseSeed;
+import com.example.marvel_app.ui.common.NavigationBundles;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
 
 public final class SpiderVerseFragment extends Fragment {
+    private SpiderVariantAdapter adapter;
+    private Call<?> variantsCall;
+    private boolean navigatingToDetail;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -31,7 +44,9 @@ public final class SpiderVerseFragment extends Fragment {
                 requireContext(), R.anim.portal_enter));
         RecyclerView variants = view.findViewById(R.id.spider_variants_list);
         variants.setLayoutManager(new LinearLayoutManager(requireContext()));
-        variants.setAdapter(new SpiderVariantAdapter(SpiderVerseCatalog.seeds(), this::openSearch));
+        adapter = new SpiderVariantAdapter(SpiderVerseCatalog.seeds(), this::openDetail);
+        variants.setAdapter(adapter);
+        loadVariantCards();
         animateEntrance(view, variants);
         view.findViewById(R.id.spider_back_button).setOnClickListener(
                 button -> Navigation.findNavController(button).navigateUp());
@@ -65,8 +80,39 @@ public final class SpiderVerseFragment extends Fragment {
         variants.animate().alpha(1f).translationY(0f).setStartDelay(330L).setDuration(340L).start();
     }
 
-    private void openSearch(SpiderVerseSeed seed) {
-        openQuery(seed.getSearchTerms().get(0));
+    private void loadVariantCards() {
+        List<Long> ids = new ArrayList<>();
+        for (SpiderVerseSeed seed : SpiderVerseCatalog.seeds()) {
+            ids.add(seed.getComicVineId());
+        }
+        variantsCall = CharacterRepository.getInstance(requireContext())
+                .loadCharactersByIds(ids, result -> {
+                    if (result.isSuccess() && adapter != null) {
+                        adapter.submitCharacters(result.getData());
+                    }
+                });
+    }
+
+    private void openDetail(SpiderVerseSeed seed, CharacterCardData character) {
+        if (getView() == null || navigatingToDetail) {
+            return;
+        }
+        NavController navController = Navigation.findNavController(requireView());
+        if (navController.getCurrentDestination() == null
+                || navController.getCurrentDestination().getId() != R.id.spiderVerseFragment) {
+            return;
+        }
+        navigatingToDetail = true;
+        Bundle args = NavigationBundles.forCharacter(character);
+        args.putString("displayNameOverride", seed.getDisplayName());
+        args.putString("realNameOverride", seed.getRealName());
+        navController.navigate(R.id.action_spider_verse_to_detail, args);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        navigatingToDetail = false;
     }
 
     private void openQuery(String query) {
@@ -74,5 +120,15 @@ public final class SpiderVerseFragment extends Fragment {
         args.putString("initialQuery", query);
         Navigation.findNavController(requireView()).navigate(
                 R.id.action_spider_verse_to_explore, args);
+    }
+
+    @Override
+    public void onDestroyView() {
+        if (variantsCall != null) {
+            variantsCall.cancel();
+            variantsCall = null;
+        }
+        adapter = null;
+        super.onDestroyView();
     }
 }

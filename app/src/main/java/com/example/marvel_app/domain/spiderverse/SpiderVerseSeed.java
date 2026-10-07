@@ -7,6 +7,7 @@ import java.util.Objects;
 
 public final class SpiderVerseSeed {
     private final String key;
+    private final long comicVineId;
     private final String displayName;
     private final String realName;
     private final String universe;
@@ -14,12 +15,17 @@ public final class SpiderVerseSeed {
 
     public SpiderVerseSeed(
             String key,
+            long comicVineId,
             String displayName,
             String realName,
             String universe,
             List<String> searchTerms
     ) {
         this.key = requireText(key, "key");
+        if (comicVineId <= 0) {
+            throw new IllegalArgumentException("comicVineId must be positive");
+        }
+        this.comicVineId = comicVineId;
         this.displayName = requireText(displayName, "displayName");
         this.realName = requireText(realName, "realName");
         this.universe = requireText(universe, "universe");
@@ -28,6 +34,14 @@ public final class SpiderVerseSeed {
 
     public String getKey() {
         return key;
+    }
+
+    public long getComicVineId() {
+        return comicVineId;
+    }
+
+    public String getApiObjectId() {
+        return "4005-" + comicVineId;
     }
 
     public String getDisplayName() {

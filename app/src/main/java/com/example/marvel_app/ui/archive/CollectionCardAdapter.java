@@ -9,6 +9,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.marvel_app.R;
 import com.example.marvel_app.domain.cards.CollectibleCard;
 import com.example.marvel_app.domain.duel.DuelStats;
@@ -62,8 +64,17 @@ final class CollectionCardAdapter extends RecyclerView.Adapter<CollectionCardAda
         holder.deckButton.setText(inDeck ? R.string.deck_remove : R.string.deck_add);
         holder.deckButton.setIconResource(inDeck ? R.drawable.ic_shield : R.drawable.ic_cards);
         holder.deckButton.setOnClickListener(view -> listener.onDeckToggle(item));
-        holder.image.setImageResource(Math.abs(item.getId().hashCode()) % 2 == 0
-                ? R.drawable.comic_collage_halftone : R.drawable.comic_collage_muted);
+        String imageUrl = item.getCharacter().getImageUrl();
+        Glide.with(holder.image)
+                .load(imageUrl.isEmpty() ? R.drawable.comic_collage_halftone : imageUrl)
+                .centerCrop()
+                .thumbnail(0.15f)
+                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                .dontAnimate()
+                .placeholder(R.drawable.comic_collage_halftone)
+                .error(R.drawable.comic_collage_muted)
+                .into(holder.image);
+        holder.image.setContentDescription(item.getCharacter().getName());
     }
 
     @Override

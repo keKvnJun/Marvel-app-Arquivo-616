@@ -19,6 +19,7 @@
     </fragment>
     <fragment android:id="@+id/spiderVerseFragment" android:name="com.example.marvel_app.ui.spiderverse.SpiderVerseFragment" android:label="@string/spider_title">
         <action android:id="@+id/action_spider_verse_to_explore" app:destination="@id/nav_explore" app:popUpTo="@id/nav_home" />
+        <action android:id="@+id/action_spider_verse_to_detail" app:destination="@id/characterDetailFragment" app:enterAnim="@anim/screen_enter" app:exitAnim="@anim/screen_exit" />
     </fragment>
     <fragment android:id="@+id/characterDetailFragment" android:name="com.example.marvel_app.ui.detail.CharacterDetailFragment" android:label="@string/action_open_dossier">
         <argument android:name="objectId" app:argType="string" />
