@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.core.text.HtmlCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,6 +25,7 @@ import com.example.marvel_app.data.local.HistoryStore;
 import com.example.marvel_app.data.model.CharacterCardData;
 import com.example.marvel_app.data.model.CharacterDto;
 import com.example.marvel_app.data.model.ResourceReference;
+import com.example.marvel_app.ui.common.NavigationBundles;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
@@ -32,10 +34,13 @@ public final class CharacterDetailFragment extends Fragment {
     private CharacterCardData card;
     private FavoriteStore favorites;
     private MaterialButton favoriteButton;
-    private ReferenceAdapter teamsAdapter;
+    private RelationshipAdapter alliesAdapter;
+    private RelationshipAdapter enemiesAdapter;
+    private RelationshipAdapter teamsAdapter;
     private ReferenceAdapter appearancesAdapter;
     private String displayNameOverride = "";
     private String realNameOverride = "";
+    private boolean relationshipNavigationLocked;
 
     @Nullable
     @Override
@@ -55,10 +60,36 @@ public final class CharacterDetailFragment extends Fragment {
                 args.getString("imageUrl", ""), "Marvel Comics", args.getInt("appearances")
         );
         favorites = new FavoriteStore(requireContext());
-        teamsAdapter = new ReferenceAdapter();
+        alliesAdapter = new RelationshipAdapter(
+                R.string.relationship_ally_badge,
+                R.color.success_green,
+                true,
+                this::openRelatedDossier
+        );
+        enemiesAdapter = new RelationshipAdapter(
+                R.string.relationship_enemy_badge,
+                R.color.marvel_red,
+                true,
+                this::openRelatedDossier
+        );
+        teamsAdapter = new RelationshipAdapter(
+                R.string.relationship_team_badge,
+                R.color.jarvis_blue,
+                false,
+                this::openRelatedDossier
+        );
         appearancesAdapter = new ReferenceAdapter();
+        RecyclerView allies = view.findViewById(R.id.detail_allies_list);
+        allies.setLayoutManager(new LinearLayoutManager(
+                requireContext(), LinearLayoutManager.HORIZONTAL, false));
+        allies.setAdapter(alliesAdapter);
+        RecyclerView enemies = view.findViewById(R.id.detail_enemies_list);
+        enemies.setLayoutManager(new LinearLayoutManager(
+                requireContext(), LinearLayoutManager.HORIZONTAL, false));
+        enemies.setAdapter(enemiesAdapter);
         RecyclerView teams = view.findViewById(R.id.detail_teams_list);
-        teams.setLayoutManager(new LinearLayoutManager(requireContext()));
+        teams.setLayoutManager(new LinearLayoutManager(
+                requireContext(), LinearLayoutManager.HORIZONTAL, false));
         teams.setAdapter(teamsAdapter);
         RecyclerView appearances = view.findViewById(R.id.detail_appearances_list);
         appearances.setLayoutManager(new LinearLayoutManager(requireContext()));
@@ -133,7 +164,12 @@ public final class CharacterDetailFragment extends Fragment {
             chip.setCheckable(false);
             powers.addView(chip);
         }
-        teamsAdapter.submit(character.getTeams());
+        bindRelationshipLane(view, R.id.detail_allies_label, R.id.detail_allies_list,
+                alliesAdapter, character.getFriends());
+        bindRelationshipLane(view, R.id.detail_enemies_label, R.id.detail_enemies_list,
+                enemiesAdapter, character.getEnemies());
+        bindRelationshipLane(view, R.id.detail_teams_label, R.id.detail_teams_list,
+                teamsAdapter, character.getTeams());
         appearancesAdapter.submit(character.getFirstAppearedInIssue() == null
                 ? java.util.Collections.emptyList()
                 : java.util.Collections.singletonList(character.getFirstAppearedInIssue()));
@@ -146,6 +182,62 @@ public final class CharacterDetailFragment extends Fragment {
     private void setStat(View container, String value, String label) {
         ((TextView) container.findViewById(R.id.stat_value)).setText(value);
         ((TextView) container.findViewById(R.id.stat_label)).setText(label);
+    }
+
+    private void bindRelationshipLane(
+            View root,
+            int labelId,
+            int listId,
+            RelationshipAdapter adapter,
+            java.util.List<ResourceReference> references
+    ) {
+        boolean hasItems = references != null && !references.isEmpty();
+        root.findViewById(labelId).setVisibility(hasItems ? View.VISIBLE : View.GONE);
+        root.findViewById(listId).setVisibility(hasItems ? View.VISIBLE : View.GONE);
+        adapter.submit(references);
+    }
+
+    private void openRelatedDossier(ResourceReference reference) {
+        if (relationshipNavigationLocked || getView() == null) return;
+        String objectId = objectIdFrom(reference);
+        if (objectId.isEmpty()) return;
+        NavController navController = Navigation.findNavController(requireView());
+        if (navController.getCurrentDestination() == null
+                || navController.getCurrentDestination().getId() != R.id.characterDetailFragment) {
+            return;
+        }
+        relationshipNavigationLocked = true;
+        CharacterCardData related = new CharacterCardData(
+                reference.getId(),
+                objectId,
+                reference.getName(),
+                "",
+                "",
+                "Marvel Comics",
+                0
+        );
+        navController.navigate(
+                R.id.action_detail_to_related_detail,
+                NavigationBundles.forCharacter(related)
+        );
+    }
+
+    private String objectIdFrom(ResourceReference reference) {
+        String url = reference.getApiDetailUrl();
+        if (!url.isEmpty()) {
+            String value = url.endsWith("/") ? url.substring(0, url.length() - 1) : url;
+            int separator = value.lastIndexOf('/');
+            if (separator >= 0 && separator < value.length() - 1) {
+                return value.substring(separator + 1);
+            }
+        }
+        return reference.getId() > 0 ? "4005-" + reference.getId() : "";
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        relationshipNavigationLocked = false;
     }
 
     private void loadImage(ImageView image, String url) {
@@ -165,6 +257,8 @@ public final class CharacterDetailFragment extends Fragment {
     @Override
     public void onDestroyView() {
         favoriteButton = null;
+        alliesAdapter = null;
+        enemiesAdapter = null;
         teamsAdapter = null;
         appearancesAdapter = null;
         displayNameOverride = "";

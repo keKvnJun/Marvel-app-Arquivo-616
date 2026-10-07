@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Widget.Marvel.Card.Outlined"
+    android:layout_width="152dp"
+    android:layout_height="76dp"
+    android:layout_marginEnd="8dp"
+    app:cardBackgroundColor="@color/surface_elevated"
+    app:strokeWidth="2dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="10dp">
+
+        <View
+            android:id="@+id/relationship_signal"
+            android:layout_width="7dp"
+            android:layout_height="match_parent"
+            android:background="@color/jarvis_blue"
+            android:importantForAccessibility="no" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/relationship_badge"
+                style="@style/TextAppearance.Marvel.Label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="ALIADO" />
+
+            <TextView
+                android:id="@+id/relationship_name"
+                style="@style/TextAppearance.Marvel.Body"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="2"
+                tools:text="Miles Morales" />
+        </LinearLayout>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

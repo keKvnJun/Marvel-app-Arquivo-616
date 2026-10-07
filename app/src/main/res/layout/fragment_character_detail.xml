@@ -154,7 +154,58 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/space_lg"
-                android:text="@string/detail_teams" />
+                android:text="@string/relationship_network_title" />
+
+            <TextView
+                style="@style/TextAppearance.Marvel.BodySecondary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_xxs"
+                android:text="@string/relationship_network_subtitle" />
+
+            <TextView
+                android:id="@+id/detail_allies_label"
+                style="@style/TextAppearance.Marvel.Label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_sm"
+                android:text="@string/relationship_allies" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/detail_allies_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_xs"
+                android:nestedScrollingEnabled="false"
+                android:overScrollMode="never"
+                tools:itemCount="3"
+                tools:listitem="@layout/item_relationship_node" />
+
+            <TextView
+                android:id="@+id/detail_enemies_label"
+                style="@style/TextAppearance.Marvel.Label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_sm"
+                android:text="@string/relationship_enemies" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/detail_enemies_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_xs"
+                android:nestedScrollingEnabled="false"
+                android:overScrollMode="never"
+                tools:itemCount="3"
+                tools:listitem="@layout/item_relationship_node" />
+
+            <TextView
+                android:id="@+id/detail_teams_label"
+                style="@style/TextAppearance.Marvel.Label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_sm"
+                android:text="@string/relationship_teams" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/detail_teams_list"
@@ -162,8 +213,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/space_xs"
                 android:nestedScrollingEnabled="false"
-                tools:itemCount="2"
-                tools:listitem="@layout/item_character_row" />
+                android:overScrollMode="never"
+                tools:itemCount="3"
+                tools:listitem="@layout/item_relationship_node" />
 
             <TextView
                 style="@style/TextAppearance.Marvel.Title"
