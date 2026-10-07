@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Widget.Marvel.Card.Outlined"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/space_sm">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="@dimen/space_sm">
+
+        <ImageView
+            android:id="@+id/collection_card_image"
+            android:layout_width="76dp"
+            android:layout_height="104dp"
+            android:background="@color/surface_secondary"
+            android:contentDescription="@string/card_art_description"
+            android:scaleType="centerCrop"
+            tools:src="@drawable/comic_collage_halftone" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/space_sm"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/collection_card_rarity"
+                style="@style/TextAppearance.Marvel.Label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/marvel_red"
+                tools:text="RARA" />
+
+            <TextView
+                android:id="@+id/collection_card_name"
+                style="@style/TextAppearance.Marvel.TitleSmall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:text="Spider-Man" />
+
+            <TextView
+                android:id="@+id/collection_card_identity"
+                style="@style/TextAppearance.Marvel.BodySecondary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:text="Peter Parker" />
+
+            <TextView
+                android:id="@+id/collection_card_stats"
+                style="@style/TextAppearance.Marvel.Label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_xs"
+                tools:text="V 82  H 78  P 95  A 72" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/collection_deck_button"
+                style="@style/Widget.Marvel.Button.Secondary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_xs"
+                android:minHeight="@dimen/touch_target"
+                android:text="@string/deck_add"
+                app:icon="@drawable/ic_cards" />
+        </LinearLayout>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

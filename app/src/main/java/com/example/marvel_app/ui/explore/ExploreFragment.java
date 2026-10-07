@@ -85,14 +85,22 @@ public final class ExploreFragment extends Fragment implements CharacterAdapter.
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
             @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (pendingSearch != null) searchHandler.removeCallbacks(pendingSearch);
-                pendingSearch = () -> executeSearch(s.toString());
+                String query = s == null ? "" : s.toString();
+                pendingSearch = () -> executeSearch(query);
                 searchHandler.postDelayed(pendingSearch, 350L);
             }
             @Override public void afterTextChanged(Editable s) { }
         });
         String initialQuery = getArguments() == null ? "" : getArguments().getString("initialQuery", "");
-        input.setText(initialQuery);
-        if (initialQuery.isEmpty()) viewModel.loadFeatured();
+        if (initialQuery.isEmpty()) {
+            CharacterListViewModel.State currentState = viewModel.state().getValue();
+            if (currentState == null || (!currentState.loading && currentState.items.isEmpty())) {
+                viewModel.loadFeatured();
+            }
+        } else {
+            input.setText(initialQuery);
+            input.setSelection(initialQuery.length());
+        }
 
         TextInputLayout inputLayout = view.findViewById(R.id.search_input_layout);
         ChipGroup filters = view.findViewById(R.id.filter_chip_group);

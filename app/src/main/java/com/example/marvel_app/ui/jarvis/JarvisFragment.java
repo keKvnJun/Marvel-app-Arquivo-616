@@ -161,6 +161,9 @@ public final class JarvisFragment extends Fragment {
     @Override
     public void onDestroyView() {
         if (visionCall != null) visionCall.cancel();
+        if (dataCall != null) dataCall.cancel();
+        visionCall = null;
+        dataCall = null;
         if (list != null) list.setAdapter(null);
         adapter = null;
         list = null;

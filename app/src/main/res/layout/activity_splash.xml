@@ -1,22 +1,136 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/splash_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black">
+    android:background="@color/black"
+    android:clipChildren="false">
 
     <ImageView
         android:id="@+id/splash_comic_background"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:alpha="0.30"
         android:contentDescription="@null"
         android:scaleType="centerCrop"
         android:src="@drawable/comic_collage_splash" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/splash_panel_board"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipChildren="false"
+        android:padding="10dp">
+
+        <FrameLayout
+            android:id="@+id/splash_panel_left"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:rotation="-3"
+            app:layout_constraintHeight_percent="0.57"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_percent="0.62">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@null"
+                android:scaleType="centerCrop"
+                android:src="@drawable/comic_collage_halftone" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/bg_splash_panel_border" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/splash_panel_right"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:rotation="4"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_percent="0.58"
+            app:layout_constraintWidth_percent="0.61">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@null"
+                android:scaleType="centerCrop"
+                android:src="@drawable/comic_iron_man" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/bg_splash_panel_border" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/splash_panel_center"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:rotation="-1"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_percent="0.41"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_percent="0.77">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@null"
+                android:scaleType="centerCrop"
+                android:src="@drawable/comic_collage_muted" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/bg_splash_panel_border" />
+        </FrameLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/bg_splash_scrim" />
+
+    <TextView
+        android:id="@+id/splash_fx_pow"
+        android:layout_width="150dp"
+        android:layout_height="105dp"
+        android:layout_gravity="start|top"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="54dp"
+        android:background="@drawable/comic_burst_yellow"
+        android:fontFamily="sans-serif-condensed"
+        android:gravity="center"
+        android:rotation="-9"
+        android:text="@string/splash_pow"
+        android:textColor="@color/black"
+        android:textSize="34sp"
+        android:textStyle="bold|italic" />
+
+    <TextView
+        android:id="@+id/splash_fx_zap"
+        android:layout_width="132dp"
+        android:layout_height="92dp"
+        android:layout_gravity="end|bottom"
+        android:layout_marginEnd="2dp"
+        android:layout_marginBottom="92dp"
+        android:background="@drawable/comic_burst_blue"
+        android:fontFamily="sans-serif-condensed"
+        android:gravity="center"
+        android:rotation="8"
+        android:text="@string/splash_zap"
+        android:textColor="@color/black"
+        android:textSize="30sp"
+        android:textStyle="bold|italic" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -24,12 +138,23 @@
         android:layout_gravity="center"
         android:gravity="center"
         android:orientation="vertical"
-        android:padding="@dimen/space_xl">
+        android:paddingHorizontal="@dimen/space_lg">
+
+        <TextView
+            style="@style/TextAppearance.Marvel.Label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/black"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="5dp"
+            android:text="@string/splash_issue"
+            android:textColor="@color/comic_yellow" />
 
         <ImageView
             android:id="@+id/splash_shield_icon"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginTop="@dimen/space_sm"
             android:contentDescription="@string/shield_logo_description"
             android:src="@drawable/ic_shield"
             app:tint="@color/white" />
@@ -39,10 +164,12 @@
             style="@style/TextAppearance.Marvel.Display"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_md"
-            android:background="@drawable/bg_red_label"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="8dp"
+            android:layout_marginTop="@dimen/space_xs"
+            android:background="@drawable/bg_splash_title_plate"
+            android:paddingStart="22dp"
+            android:paddingTop="13dp"
+            android:paddingEnd="27dp"
+            android:paddingBottom="18dp"
             android:text="@string/app_name"
             android:textColor="@color/white" />
 
@@ -51,6 +178,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/space_sm"
+            android:background="@color/black"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="4dp"
             android:text="@string/home_status"
             android:textColor="@color/white" />
 
@@ -60,18 +190,14 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/space_lg"
             android:indeterminate="true"
-            app:indicatorColor="@color/marvel_red"
-            app:trackColor="#55FFFFFF"
+            app:indicatorColor="@color/comic_yellow"
+            app:trackColor="#66FFFFFF"
             app:trackThickness="4dp" />
     </LinearLayout>
 
-    <TextView
-        style="@style/TextAppearance.Marvel.BodySecondary"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center_horizontal"
-        android:layout_marginBottom="@dimen/space_xl"
-        android:text="@string/loading_files"
-        android:textColor="@color/white" />
+    <com.example.marvel_app.ui.widget.ComicTransitionView
+        android:id="@+id/splash_transition"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </FrameLayout>

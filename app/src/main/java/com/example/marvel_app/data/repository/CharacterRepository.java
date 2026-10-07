@@ -11,6 +11,7 @@ import com.example.marvel_app.data.model.CharacterDto;
 import com.example.marvel_app.data.model.CharacterCardData;
 import com.example.marvel_app.data.model.PowerDto;
 import com.example.marvel_app.data.model.ResourceReference;
+import com.example.marvel_app.domain.search.CharacterSearchQueryExpander;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,6 +27,49 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public final class CharacterRepository {
+
+    public static final class SmartSearchPage {
+        private final List<CharacterDto> characters;
+        private final boolean hasMore;
+
+        private SmartSearchPage(List<CharacterDto> characters, boolean hasMore) {
+            this.characters = Collections.unmodifiableList(new ArrayList<>(characters));
+            this.hasMore = hasMore;
+        }
+
+        public List<CharacterDto> getCharacters() {
+            return characters;
+        }
+
+        public boolean hasMore() {
+            return hasMore;
+        }
+    }
+
+    public static final class SmartSearchRequest {
+        private final List<Call<?>> calls = new ArrayList<>();
+        private boolean canceled;
+
+        private synchronized void add(Call<?> call) {
+            if (canceled) {
+                call.cancel();
+            } else {
+                calls.add(call);
+            }
+        }
+
+        public synchronized void cancel() {
+            canceled = true;
+            for (Call<?> call : calls) {
+                call.cancel();
+            }
+            calls.clear();
+        }
+
+        public synchronized boolean isCanceled() {
+            return canceled;
+        }
+    }
 
     public static final int PAGE_SIZE = 20;
     public static final int SEARCH_PAGE_SIZE = 10;
@@ -112,6 +156,135 @@ public final class CharacterRepository {
         return call;
     }
 
+    public SmartSearchRequest searchCharactersSmart(
+            String userQuery,
+            int page,
+            RepositoryCallback<SmartSearchPage> callback
+    ) {
+        SmartSearchRequest request = new SmartSearchRequest();
+        List<String> expandedQueries = CharacterSearchQueryExpander.expand(userQuery);
+        if (expandedQueries.isEmpty()) {
+            callback.onResult(RepositoryResult.success(
+                    new SmartSearchPage(Collections.emptyList(), false)
+            ));
+            return request;
+        }
+        if (!isConfigured()) {
+            callback.onResult(RepositoryResult.notConfigured(
+                    "Adicione COMIC_VINE_API_KEY ao arquivo local.properties."
+            ));
+            return request;
+        }
+
+        List<List<CharacterDto>> resultsByQuery = new ArrayList<>();
+        for (int index = 0; index < expandedQueries.size(); index++) {
+            resultsByQuery.add(null);
+        }
+        int[] remaining = {expandedQueries.size()};
+        int[] successfulQueries = {0};
+        boolean[] hasMoreByQuery = new boolean[expandedQueries.size()];
+        String[] lastError = {"Não foi possível consultar os arquivos da Comic Vine."};
+        int safePage = Math.max(1, page);
+
+        for (int index = 0; index < expandedQueries.size(); index++) {
+            final int resultIndex = index;
+            Call<ApiResponse<List<CharacterDto>>> call = service.searchCharacters(
+                    expandedQueries.get(index),
+                    "character",
+                    CARD_FIELDS,
+                    SEARCH_PAGE_SIZE,
+                    (safePage - 1) * SEARCH_PAGE_SIZE
+            );
+            request.add(call);
+            call.enqueue(new Callback<ApiResponse<List<CharacterDto>>>() {
+                @Override
+                public void onResponse(
+                        Call<ApiResponse<List<CharacterDto>>> currentCall,
+                        Response<ApiResponse<List<CharacterDto>>> response
+                ) {
+                    ApiResponse<List<CharacterDto>> body = response.body();
+                    synchronized (request) {
+                        if (request.isCanceled()) {
+                            return;
+                        }
+                        if (response.isSuccessful() && body != null && body.isSuccessful()) {
+                            resultsByQuery.set(resultIndex, mergeWithoutDuplicates(body.getResults()));
+                            hasMoreByQuery[resultIndex] = body.getOffset()
+                                    + body.getNumberOfPageResults()
+                                    < body.getNumberOfTotalResults();
+                            successfulQueries[0]++;
+                        } else {
+                            lastError[0] = apiErrorMessage(response, body);
+                        }
+                        remaining[0]--;
+                        if (remaining[0] == 0) {
+                            finishSmartSearch(
+                                    resultsByQuery,
+                                    hasMoreByQuery,
+                                    successfulQueries[0],
+                                    lastError[0],
+                                    callback
+                            );
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(
+                        Call<ApiResponse<List<CharacterDto>>> currentCall,
+                        Throwable cause
+                ) {
+                    synchronized (request) {
+                        if (request.isCanceled()) {
+                            return;
+                        }
+                        lastError[0] = "Não foi possível consultar os arquivos da Comic Vine.";
+                        remaining[0]--;
+                        if (remaining[0] == 0) {
+                            finishSmartSearch(
+                                    resultsByQuery,
+                                    hasMoreByQuery,
+                                    successfulQueries[0],
+                                    lastError[0],
+                                    callback
+                            );
+                        }
+                    }
+                }
+            });
+        }
+        return request;
+    }
+
+    private void finishSmartSearch(
+            List<List<CharacterDto>> resultsByQuery,
+            boolean[] hasMoreByQuery,
+            int successfulQueries,
+            String errorMessage,
+            RepositoryCallback<SmartSearchPage> callback
+    ) {
+        if (successfulQueries == 0) {
+            callback.onResult(RepositoryResult.error(errorMessage, null));
+            return;
+        }
+        Map<Long, CharacterDto> unique = new LinkedHashMap<>();
+        for (List<CharacterDto> queryResults : resultsByQuery) {
+            if (queryResults == null) {
+                continue;
+            }
+            for (CharacterDto character : queryResults) {
+                unique.putIfAbsent(character.getId(), character);
+            }
+        }
+        boolean hasMore = false;
+        for (boolean queryHasMore : hasMoreByQuery) {
+            hasMore |= queryHasMore;
+        }
+        callback.onResult(RepositoryResult.success(
+                new SmartSearchPage(new ArrayList<>(unique.values()), hasMore)
+        ));
+    }
+
     public Call<ApiResponse<CharacterDto>> loadCharacter(
             String objectId,
             RepositoryCallback<CharacterDto> callback
@@ -165,15 +338,16 @@ public final class CharacterRepository {
         return call;
     }
 
-    public void searchCharactersByPowers(
+    public SmartSearchRequest searchCharactersByPowers(
             List<String> powerNames,
             RepositoryCallback<List<CharacterCardData>> callback
     ) {
+        SmartSearchRequest request = new SmartSearchRequest();
         if (!isConfigured()) {
             callback.onResult(RepositoryResult.notConfigured(
                     "Adicione COMIC_VINE_API_KEY ao arquivo local.properties."
             ));
-            return;
+            return request;
         }
         List<String> cleanNames = new ArrayList<>();
         for (String name : powerNames) {
@@ -181,23 +355,27 @@ public final class CharacterRepository {
         }
         if (cleanNames.isEmpty()) {
             callback.onResult(RepositoryResult.success(Collections.emptyList()));
-            return;
+            return request;
         }
-        loadPowerCharacters(cleanNames, 0, new ArrayList<>(), callback);
+        loadPowerCharacters(cleanNames, 0, new ArrayList<>(), request, callback);
+        return request;
     }
 
     private void loadPowerCharacters(
             List<String> names,
             int index,
             List<Map<Long, ResourceReference>> groups,
+            SmartSearchRequest smartRequest,
             RepositoryCallback<List<CharacterCardData>> callback
     ) {
         Call<ApiResponse<List<PowerDto>>> call = service.searchPowers(
                 names.get(index), "power", "id,name,characters", 10, 0);
+        smartRequest.add(call);
         call.enqueue(new Callback<ApiResponse<List<PowerDto>>>() {
             @Override
             public void onResponse(Call<ApiResponse<List<PowerDto>>> request,
                                    Response<ApiResponse<List<PowerDto>>> response) {
+                if (smartRequest.isCanceled()) return;
                 ApiResponse<List<PowerDto>> body = response.body();
                 if (!response.isSuccessful() || body == null || !body.isSuccessful()) {
                     callback.onResult(RepositoryResult.error(apiErrorMessage(response, body), null));
@@ -214,7 +392,7 @@ public final class CharacterRepository {
                 }
                 groups.add(group);
                 if (index + 1 < names.size()) {
-                    loadPowerCharacters(names, index + 1, groups, callback);
+                    loadPowerCharacters(names, index + 1, groups, smartRequest, callback);
                 } else {
                     callback.onResult(RepositoryResult.success(intersectPowerGroups(groups)));
                 }
@@ -222,7 +400,7 @@ public final class CharacterRepository {
 
             @Override
             public void onFailure(Call<ApiResponse<List<PowerDto>>> request, Throwable cause) {
-                if (!request.isCanceled()) callback.onResult(RepositoryResult.error(
+                if (!request.isCanceled() && !smartRequest.isCanceled()) callback.onResult(RepositoryResult.error(
                         "Não foi possível cruzar os poderes selecionados.", cause));
             }
         });

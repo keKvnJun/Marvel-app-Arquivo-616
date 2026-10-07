@@ -8,13 +8,19 @@ import androidx.activity.EdgeToEdge;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.lifecycle.Lifecycle;
 import androidx.navigation.NavController;
+import androidx.navigation.NavDestination;
+import androidx.navigation.NavOptions;
 import androidx.navigation.fragment.NavHostFragment;
-import androidx.navigation.ui.NavigationUI;
 
+import com.example.marvel_app.ui.widget.ComicTransitionView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationBarView;
 
 public class MainActivity extends AppCompatActivity {
+    private ComicTransitionView tabTransition;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,12 +39,87 @@ public class MainActivity extends AppCompatActivity {
         }
         NavController navController = host.getNavController();
         BottomNavigationView bottomNavigation = findViewById(R.id.bottom_navigation);
-        NavigationUI.setupWithNavController(bottomNavigation, navController);
+        tabTransition = ComicTransitionView.attachTo(this);
+        bottomNavigation.setLabelVisibilityMode(NavigationBarView.LABEL_VISIBILITY_SELECTED);
+        bottomNavigation.setOnItemSelectedListener(item -> {
+            NavDestination current = navController.getCurrentDestination();
+            if (current != null && current.getId() == item.getItemId()) {
+                return true;
+            }
+            tabTransition.play(() -> {
+                if (getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED)) {
+                    if (!navigateToTopLevel(navController, item.getItemId())) {
+                        restoreSelectedDestination(bottomNavigation, navController);
+                    }
+                } else {
+                    restoreSelectedDestination(bottomNavigation, navController);
+                }
+            });
+            return true;
+        });
+        bottomNavigation.setOnItemReselectedListener(item -> {
+            if (item.getItemId() == R.id.nav_home) {
+                navController.popBackStack(R.id.nav_home, false);
+            }
+        });
         navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
             int id = destination.getId();
-            boolean topLevel = id == R.id.nav_home || id == R.id.nav_explore
-                    || id == R.id.nav_duel || id == R.id.nav_jarvis || id == R.id.nav_archive;
+            boolean topLevel = isTopLevel(id);
             bottomNavigation.setVisibility(topLevel ? View.VISIBLE : View.GONE);
+            if (topLevel) {
+                bottomNavigation.getMenu().findItem(id).setChecked(true);
+            }
         });
+    }
+
+    private boolean navigateToTopLevel(NavController navController, int destinationId) {
+        NavDestination current = navController.getCurrentDestination();
+        if (current != null && current.getId() == destinationId) {
+            return true;
+        }
+
+        if (destinationId == R.id.nav_home
+                && navController.popBackStack(R.id.nav_home, false)) {
+            return true;
+        }
+
+        NavOptions options = new NavOptions.Builder()
+                .setLaunchSingleTop(true)
+                .setRestoreState(true)
+                .setPopUpTo(R.id.nav_home, false, true)
+                .build();
+        try {
+            navController.navigate(destinationId, null, options);
+            return true;
+        } catch (IllegalArgumentException | IllegalStateException exception) {
+            return false;
+        }
+    }
+
+    private boolean isTopLevel(int destinationId) {
+        return destinationId == R.id.nav_home
+                || destinationId == R.id.nav_explore
+                || destinationId == R.id.nav_duel
+                || destinationId == R.id.nav_jarvis
+                || destinationId == R.id.nav_archive;
+    }
+
+    private void restoreSelectedDestination(
+            BottomNavigationView bottomNavigation,
+            NavController navController
+    ) {
+        NavDestination destination = navController.getCurrentDestination();
+        if (destination != null && isTopLevel(destination.getId())) {
+            bottomNavigation.getMenu().findItem(destination.getId()).setChecked(true);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (tabTransition != null) {
+            tabTransition.cancel();
+            tabTransition = null;
+        }
+        super.onDestroy();
     }
 }

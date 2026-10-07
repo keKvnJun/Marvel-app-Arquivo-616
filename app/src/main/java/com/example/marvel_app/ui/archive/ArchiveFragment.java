@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,8 +19,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.marvel_app.R;
 import com.example.marvel_app.data.local.FavoriteStore;
 import com.example.marvel_app.data.local.HistoryStore;
+import com.example.marvel_app.data.local.SharedPreferencesCardStorage;
 import com.example.marvel_app.data.local.ThemeStore;
 import com.example.marvel_app.data.model.CharacterCardData;
+import com.example.marvel_app.domain.cards.CardCollectionState;
+import com.example.marvel_app.domain.cards.CardCollectionStore;
+import com.example.marvel_app.domain.cards.CollectibleCard;
 import com.example.marvel_app.ui.common.CharacterAdapter;
 import com.example.marvel_app.ui.common.NavigationBundles;
 import com.example.marvel_app.domain.duel.StanLeeCardFactory;
@@ -30,8 +36,14 @@ import java.util.List;
 public final class ArchiveFragment extends Fragment implements CharacterAdapter.Listener {
     private FavoriteStore favorites;
     private HistoryStore history;
-    private CharacterAdapter adapter;
+    private CharacterAdapter characterAdapter;
+    private CollectionCardAdapter collectionAdapter;
+    private CardCollectionStore cardCollection;
+    private RecyclerView list;
     private View emptyState;
+    private TextView emptyTitle;
+    private TextView emptyBody;
+    private TextView collectionSummary;
     private int selectedTab;
     private int shieldTaps;
 
@@ -46,11 +58,16 @@ public final class ArchiveFragment extends Fragment implements CharacterAdapter.
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         favorites = new FavoriteStore(requireContext());
         history = new HistoryStore(requireContext());
-        adapter = new CharacterAdapter(CharacterAdapter.Mode.ROW, favorites, this);
-        RecyclerView list = view.findViewById(R.id.archive_characters_list);
+        cardCollection = new CardCollectionStore(new SharedPreferencesCardStorage(requireContext()));
+        characterAdapter = new CharacterAdapter(CharacterAdapter.Mode.ROW, favorites, this);
+        collectionAdapter = new CollectionCardAdapter(this::toggleDeck);
+        list = view.findViewById(R.id.archive_characters_list);
         list.setLayoutManager(new LinearLayoutManager(requireContext()));
-        list.setAdapter(adapter);
+        list.setAdapter(characterAdapter);
         emptyState = view.findViewById(R.id.archive_empty_state);
+        emptyTitle = view.findViewById(R.id.archive_empty_title);
+        emptyBody = view.findViewById(R.id.archive_empty_body);
+        collectionSummary = view.findViewById(R.id.archive_collection_summary);
 
         TabLayout tabs = view.findViewById(R.id.archive_tabs);
         tabs.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -89,9 +106,60 @@ public final class ArchiveFragment extends Fragment implements CharacterAdapter.
     }
 
     private void refresh() {
-        List<CharacterCardData> items = selectedTab == 0 ? favorites.getFavorites() : history.getHistory();
-        adapter.submitList(items);
+        if (selectedTab == 2) {
+            CardCollectionState state = cardCollection.load();
+            List<CollectibleCard> cards = cardCollection.ownedCards();
+            list.setAdapter(collectionAdapter);
+            collectionAdapter.submit(cards, state.getDeckIds());
+            collectionSummary.setVisibility(View.VISIBLE);
+            collectionSummary.setText(getString(
+                    R.string.collection_summary,
+                    state.getOwnedIds().size(), state.getDeckIds().size(),
+                    CardCollectionStore.MAX_DECK_SIZE));
+            emptyTitle.setText(R.string.collection_empty_title);
+            emptyBody.setText(R.string.collection_empty_body);
+            emptyState.setVisibility(cards.isEmpty() ? View.VISIBLE : View.GONE);
+            return;
+        }
+
+        List<CharacterCardData> items = selectedTab == 0
+                ? favorites.getFavorites() : history.getHistory();
+        list.setAdapter(characterAdapter);
+        characterAdapter.submitList(items);
+        collectionSummary.setVisibility(View.GONE);
+        emptyTitle.setText(selectedTab == 0
+                ? R.string.archive_empty_title : R.string.history_empty_title);
+        emptyBody.setText(selectedTab == 0
+                ? R.string.archive_empty_body : R.string.history_empty_body);
         emptyState.setVisibility(items.isEmpty() ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (list != null) {
+            refresh();
+        }
+    }
+
+    private void toggleDeck(CollectibleCard card) {
+        CardCollectionStore.DeckChange result = cardCollection.toggleDeck(card.getId());
+        int message;
+        switch (result) {
+            case ADDED:
+                message = R.string.deck_added;
+                break;
+            case REMOVED:
+                message = R.string.deck_removed;
+                break;
+            case DECK_FULL:
+                message = R.string.deck_full;
+                break;
+            default:
+                message = R.string.deck_change_error;
+        }
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+        refresh();
     }
 
     @Override
@@ -109,8 +177,14 @@ public final class ArchiveFragment extends Fragment implements CharacterAdapter.
     public void onDestroyView() {
         favorites = null;
         history = null;
-        adapter = null;
+        characterAdapter = null;
+        collectionAdapter = null;
+        cardCollection = null;
+        list = null;
         emptyState = null;
+        emptyTitle = null;
+        emptyBody = null;
+        collectionSummary = null;
         super.onDestroyView();
     }
 }

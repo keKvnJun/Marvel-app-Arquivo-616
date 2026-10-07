@@ -86,7 +86,26 @@
             android:layout_height="wrap_content"
             android:icon="@drawable/ic_comic"
             android:text="@string/archive_history" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:icon="@drawable/ic_cards"
+            android:text="@string/archive_cards" />
     </com.google.android.material.tabs.TabLayout>
+
+    <TextView
+        android:id="@+id/archive_collection_summary"
+        style="@style/TextAppearance.Marvel.Label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/screen_padding"
+        android:layout_marginTop="@dimen/space_sm"
+        android:background="@drawable/bg_red_label"
+        android:textColor="@color/text_on_red_label"
+        android:visibility="gone"
+        tools:text="COLEÇÃO 8 • DECK 3/3"
+        tools:visibility="visible" />
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -120,6 +139,7 @@
                 app:tint="@color/marvel_red" />
 
             <TextView
+                android:id="@+id/archive_empty_title"
                 style="@style/TextAppearance.Marvel.Title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -128,6 +148,7 @@
                 android:text="@string/archive_empty_title" />
 
             <TextView
+                android:id="@+id/archive_empty_body"
                 style="@style/TextAppearance.Marvel.BodySecondary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

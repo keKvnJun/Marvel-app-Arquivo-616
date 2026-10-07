@@ -14,12 +14,17 @@
     <color name="text_primary">#171717</color>
     <color name="text_secondary">#5B554D</color>
     <color name="text_on_accent">#FFFFFFFF</color>
+    <color name="text_on_red_label">#FFFFFFFF</color>
     <color name="outline_color">#80776C</color>
     <color name="outline_subtle">#D8CCBB</color>
     <color name="scrim_color">#99000000</color>
     <color name="comic_ink_08">#14171717</color>
     <color name="comic_ink_16">#29171717</color>
     <color name="jarvis_glow">#331677FF</color>
+    <color name="spider_cyan">#25D8FF</color>
+    <color name="spider_magenta">#FF2D87</color>
+    <color name="spider_portal_violet">#7B3DFF</color>
+    <color name="comic_burst_cream">#FFF4C7</color>
     <color name="transparent">#00000000</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>

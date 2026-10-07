@@ -102,7 +102,7 @@
                         android:layout_height="wrap_content"
                         android:background="@drawable/bg_red_label"
                         android:text="@string/spider_file"
-                        android:textColor="@color/white" />
+                        android:textColor="@color/text_on_red_label" />
 
                     <TextView
                         style="@style/TextAppearance.Marvel.Headline"

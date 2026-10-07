@@ -1,124 +1,177 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/app_background"
-    android:orientation="vertical">
+    android:background="@color/black">
 
-    <FrameLayout
+    <ImageView
         android:layout_width="match_parent"
-        android:layout_height="236dp">
+        android:layout_height="match_parent"
+        android:alpha="0.16"
+        android:contentDescription="@null"
+        android:scaleType="centerCrop"
+        android:src="@drawable/comic_collage_halftone" />
 
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:contentDescription="@null"
-            android:scaleType="centerCrop"
-            android:src="@drawable/comic_collage_halftone" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/bg_image_scrim" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/spider_back_button"
-            style="@style/Widget.Marvel.Button.Icon"
-            android:layout_width="@dimen/touch_target"
-            android:layout_height="@dimen/touch_target"
-            android:layout_gravity="start|top"
-            android:layout_margin="@dimen/space_md"
-            android:contentDescription="@string/navigate_back"
-            app:backgroundTint="@color/surface_elevated"
-            app:icon="@drawable/ic_arrow_back"
-            app:iconGravity="textStart"
-            app:iconPadding="0dp" />
-
-        <View
-            android:id="@+id/spider_portal"
-            android:layout_width="132dp"
-            android:layout_height="132dp"
-            android:layout_gravity="end|center_vertical"
-            android:layout_marginEnd="@dimen/space_md"
-            android:background="@drawable/bg_portal" />
-
-        <LinearLayout
-            android:layout_width="260dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start|bottom"
-            android:orientation="vertical"
-            android:padding="@dimen/screen_padding">
-
-            <TextView
-                style="@style/TextAppearance.Marvel.Label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_red_label"
-                android:text="@string/spider_file"
-                android:textColor="@color/white" />
-
-            <TextView
-                style="@style/TextAppearance.Marvel.Headline"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/space_xs"
-                android:text="@string/spider_title"
-                android:textColor="@color/white" />
-        </LinearLayout>
-    </FrameLayout>
-
-    <TextView
-        style="@style/TextAppearance.Marvel.Body"
+    <View
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="@dimen/screen_padding"
-        android:paddingTop="@dimen/space_md"
-        android:paddingEnd="@dimen/screen_padding"
-        android:text="@string/spider_intro" />
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_spiderverse_screen" />
+
+    <com.example.marvel_app.ui.widget.GlitchOverlayView
+        android:id="@+id/spider_glitch_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingHorizontal="@dimen/screen_padding"
-        android:paddingTop="@dimen/space_md">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:id="@+id/spider_header"
+            android:layout_width="match_parent"
+            android:layout_height="248dp"
+            android:clipChildren="false">
+
+            <ImageView
+                android:id="@+id/spider_header_image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@null"
+                android:scaleType="centerCrop"
+                android:src="@drawable/comic_collage_halftone" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:alpha="0.60"
+                android:background="@drawable/bg_spiderverse_header" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/bg_image_scrim" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/spider_back_button"
+                style="@style/Widget.Marvel.Button.Icon"
+                android:layout_width="@dimen/touch_target"
+                android:layout_height="@dimen/touch_target"
+                android:layout_gravity="start|top"
+                android:layout_margin="@dimen/space_md"
+                android:contentDescription="@string/navigate_back"
+                app:backgroundTint="@color/black"
+                app:icon="@drawable/ic_arrow_back"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:iconTint="@color/white" />
+
+            <com.example.marvel_app.ui.widget.MultiversePortalView
+                android:id="@+id/spider_portal"
+                android:layout_width="154dp"
+                android:layout_height="154dp"
+                android:layout_gravity="end|center_vertical"
+                android:layout_marginEnd="6dp" />
+
+            <LinearLayout
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start|bottom"
+                android:orientation="vertical"
+                android:padding="@dimen/screen_padding">
+
+                <TextView
+                    android:id="@+id/spider_file_label"
+                    style="@style/TextAppearance.Marvel.Label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_red_label"
+                    android:text="@string/spider_file"
+                    android:textColor="@color/text_on_red_label" />
+
+                <TextView
+                    android:id="@+id/spider_title_text"
+                    style="@style/TextAppearance.Marvel.Headline"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_xs"
+                    android:shadowColor="@color/spider_magenta"
+                    android:shadowDx="5"
+                    android:shadowDy="0"
+                    android:shadowRadius="0"
+                    android:text="@string/spider_title"
+                    android:textColor="@color/white"
+                    android:textSize="34sp" />
+
+                <TextView
+                    style="@style/TextAppearance.Marvel.Label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_xxs"
+                    android:text="@string/spider_signal"
+                    android:textColor="@color/spider_cyan" />
+            </LinearLayout>
+        </FrameLayout>
 
         <TextView
-            style="@style/TextAppearance.Marvel.Title"
-            android:layout_width="0dp"
+            android:id="@+id/spider_intro_text"
+            style="@style/TextAppearance.Marvel.Body"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingStart="@dimen/screen_padding"
+            android:paddingTop="@dimen/space_md"
+            android:paddingEnd="@dimen/screen_padding"
+            android:text="@string/spider_intro"
+            android:textColor="@color/white" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="@dimen/screen_padding"
+            android:paddingTop="@dimen/space_md">
+
+            <TextView
+                style="@style/TextAppearance.Marvel.Title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/spider_catalogued"
+                android:textColor="@color/white" />
+
+            <ImageView
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_portal"
+                app:tint="@color/spider_cyan" />
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/spider_variants_list"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
             android:layout_weight="1"
-            android:text="@string/spider_catalogued" />
+            android:clipToPadding="false"
+            android:paddingHorizontal="@dimen/screen_padding"
+            android:paddingTop="@dimen/space_sm"
+            tools:itemCount="6"
+            tools:listitem="@layout/item_spider_variant" />
 
-        <ImageView
-            android:layout_width="28dp"
-            android:layout_height="28dp"
-            android:contentDescription="@null"
-            android:src="@drawable/ic_portal" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/discover_variants_button"
+            style="@style/Widget.Marvel.Button.Primary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/screen_padding"
+            android:layout_marginVertical="@dimen/space_sm"
+            android:text="@string/spider_discover_more"
+            android:textColor="@color/black"
+            app:backgroundTint="@color/spider_magenta"
+            app:icon="@drawable/ic_portal"
+            app:iconTint="@color/black" />
     </LinearLayout>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/spider_variants_list"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:clipToPadding="false"
-        android:paddingHorizontal="@dimen/screen_padding"
-        android:paddingTop="@dimen/space_sm"
-        tools:itemCount="6"
-        tools:listitem="@layout/item_spider_variant" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/discover_variants_button"
-        style="@style/Widget.Marvel.Button.Primary"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/screen_padding"
-        android:layout_marginVertical="@dimen/space_sm"
-        android:text="@string/spider_discover_more"
-        app:icon="@drawable/ic_portal"
-        app:iconTint="@color/white" />
-</LinearLayout>
+</FrameLayout>

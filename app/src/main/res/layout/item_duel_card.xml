@@ -37,6 +37,22 @@
         tools:text="Miles Morales" />
 
     <TextView
+        android:id="@+id/duel_card_rarity"
+        style="@style/TextAppearance.Marvel.Label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/marvel_red"
+        tools:text="RARA" />
+
+    <TextView
+        android:id="@+id/duel_card_attribute_label"
+        style="@style/TextAppearance.Marvel.BodySecondary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/space_xxs"
+        tools:text="Versatilidade" />
+
+    <TextView
         android:id="@+id/duel_card_value"
         style="@style/TextAppearance.Marvel.Headline"
         android:layout_width="wrap_content"

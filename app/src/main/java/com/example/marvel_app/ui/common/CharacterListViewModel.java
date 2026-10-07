@@ -11,6 +11,7 @@ import com.example.marvel_app.data.model.CharacterCardData;
 import com.example.marvel_app.data.model.CharacterDto;
 import com.example.marvel_app.data.repository.CharacterRepository;
 import com.example.marvel_app.data.repository.RepositoryResult;
+import com.example.marvel_app.domain.search.CharacterSearchQueryExpander;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,6 +40,7 @@ public final class CharacterListViewModel extends AndroidViewModel {
     );
     private final List<CharacterCardData> accumulated = new ArrayList<>();
     private Call<?> activeCall;
+    private CharacterRepository.SmartSearchRequest activeSmartSearch;
     private String currentQuery = "";
     private int page = 1;
     private boolean hasMore = true;
@@ -82,7 +84,7 @@ public final class CharacterListViewModel extends AndroidViewModel {
         currentQuery = "";
         hasMore = false;
         state.setValue(new State(accumulated, true, "", true));
-        repository.searchCharactersByPowers(powers, result -> {
+        activeSmartSearch = repository.searchCharactersByPowers(powers, result -> {
             if (version != requestVersion) return;
             if (result.isSuccess()) {
                 accumulated.clear();
@@ -107,41 +109,84 @@ public final class CharacterListViewModel extends AndroidViewModel {
         cancel();
         int version = requestVersion;
         state.setValue(new State(accumulated, true, "", true));
-        activeCall = repository.searchCharacters(currentQuery, page, result -> {
-            if (version == requestVersion) consume(result, append);
+        activeSmartSearch = repository.searchCharactersSmart(currentQuery, page, result -> {
+            if (version == requestVersion) consumeSmartSearch(result, append);
         });
     }
 
     private void consumeReplacing(RepositoryResult<List<CharacterDto>> result) {
         accumulated.clear();
-        consume(result, false);
+        if (result.isSuccess()) {
+            consumeCharacters(result.getData(), false, false);
+        } else {
+            consumeFailure(result);
+        }
     }
 
-    private void consume(RepositoryResult<List<CharacterDto>> result, boolean append) {
+    private void consumeSmartSearch(
+            RepositoryResult<CharacterRepository.SmartSearchPage> result,
+            boolean append
+    ) {
         if (result.isSuccess()) {
-            hasMore = result.getData().size() >= CharacterRepository.SEARCH_PAGE_SIZE;
-            if (!append) {
-                accumulated.clear();
-            }
-            for (CharacterDto character : result.getData()) {
-                CharacterCardData card = CharacterCardData.from(character);
-                boolean exists = accumulated.stream().anyMatch(item -> item.getId() == card.getId());
-                if (!exists) {
-                    accumulated.add(card);
-                }
-            }
-            state.postValue(new State(new ArrayList<>(accumulated), false, "", true));
-            page++;
+            CharacterRepository.SmartSearchPage searchPage = result.getData();
+            consumeCharacters(searchPage.getCharacters(), append, searchPage.hasMore());
         } else {
-            boolean configured = result.getStatus() != RepositoryResult.Status.NOT_CONFIGURED;
-            List<CharacterCardData> fallback = accumulated.isEmpty() ? SampleContent.characters() : accumulated;
-            state.postValue(new State(new ArrayList<>(fallback), false, result.getMessage(), configured));
+            consumeFailure(result);
         }
+    }
+
+    private void consumeCharacters(
+            List<CharacterDto> characters,
+            boolean append,
+            boolean sourceHasMore
+    ) {
+        int previousSize = accumulated.size();
+        if (!append) {
+            accumulated.clear();
+            previousSize = 0;
+        }
+        for (CharacterDto character : characters) {
+            CharacterCardData card = CharacterCardData.from(character);
+            boolean exists = accumulated.stream().anyMatch(item -> item.getId() == card.getId());
+            if (!exists) {
+                accumulated.add(card);
+            }
+        }
+        hasMore = sourceHasMore && (!append || accumulated.size() > previousSize);
+        state.postValue(new State(new ArrayList<>(accumulated), false, "", true));
+        page++;
+    }
+
+    private void consumeFailure(RepositoryResult<?> result) {
+        hasMore = false;
+        boolean configured = result.getStatus() != RepositoryResult.Status.NOT_CONFIGURED;
+        List<CharacterCardData> fallback = accumulated.isEmpty()
+                ? offlineSuggestions(currentQuery)
+                : accumulated;
+        state.postValue(new State(new ArrayList<>(fallback), false, result.getMessage(), configured));
+    }
+
+    private List<CharacterCardData> offlineSuggestions(String query) {
+        if (query == null || query.trim().isEmpty()) {
+            return SampleContent.characters();
+        }
+        List<CharacterCardData> matches = new ArrayList<>();
+        for (CharacterCardData character : SampleContent.characters()) {
+            if (CharacterSearchQueryExpander.matchesAnyExpansion(query, character.getName())) {
+                matches.add(character);
+            }
+        }
+        return matches;
     }
 
     private void cancel() {
         if (activeCall != null) {
             activeCall.cancel();
+            activeCall = null;
+        }
+        if (activeSmartSearch != null) {
+            activeSmartSearch.cancel();
+            activeSmartSearch = null;
         }
     }
 

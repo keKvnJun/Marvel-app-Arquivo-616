@@ -32,10 +32,37 @@ public final class SpiderVerseFragment extends Fragment {
         RecyclerView variants = view.findViewById(R.id.spider_variants_list);
         variants.setLayoutManager(new LinearLayoutManager(requireContext()));
         variants.setAdapter(new SpiderVariantAdapter(SpiderVerseCatalog.seeds(), this::openSearch));
+        animateEntrance(view, variants);
         view.findViewById(R.id.spider_back_button).setOnClickListener(
                 button -> Navigation.findNavController(button).navigateUp());
         view.findViewById(R.id.discover_variants_button).setOnClickListener(
                 button -> openQuery("Spider"));
+    }
+
+    private void animateEntrance(View root, RecyclerView variants) {
+        View header = root.findViewById(R.id.spider_header);
+        View title = root.findViewById(R.id.spider_title_text);
+        View label = root.findViewById(R.id.spider_file_label);
+        View intro = root.findViewById(R.id.spider_intro_text);
+
+        header.setAlpha(0f);
+        header.setScaleX(1.08f);
+        header.setScaleY(1.08f);
+        header.animate().alpha(1f).scaleX(1f).scaleY(1f).setDuration(420L).start();
+
+        title.setTranslationX(-64f);
+        label.setTranslationX(-44f);
+        title.setAlpha(0f);
+        label.setAlpha(0f);
+        title.animate().translationX(0f).alpha(1f).setStartDelay(130L).setDuration(310L).start();
+        label.animate().translationX(0f).alpha(1f).setStartDelay(210L).setDuration(280L).start();
+
+        intro.setAlpha(0f);
+        intro.setTranslationY(24f);
+        variants.setAlpha(0f);
+        variants.setTranslationY(36f);
+        intro.animate().alpha(1f).translationY(0f).setStartDelay(260L).setDuration(280L).start();
+        variants.animate().alpha(1f).translationY(0f).setStartDelay(330L).setDuration(340L).start();
     }
 
     private void openSearch(SpiderVerseSeed seed) {
