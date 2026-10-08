@@ -36,6 +36,7 @@ import com.example.marvel_app.ui.widget.PackOpeningView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.chip.ChipGroup;
 
@@ -500,11 +501,26 @@ public final class DuelFragment extends Fragment {
                     : View.IMPORTANT_FOR_ACCESSIBILITY_AUTO);
         }
         if (getActivity() != null) {
-            View bottomNavigation = getActivity().findViewById(R.id.bottom_navigation);
+            BottomNavigationView bottomNavigation =
+                    getActivity().findViewById(R.id.bottom_navigation);
             if (bottomNavigation != null) {
-                bottomNavigation.setVisibility(visible ? View.INVISIBLE : View.VISIBLE);
+                bottomNavigation.setVisibility(View.VISIBLE);
+                bottomNavigation.setAlpha(1f);
+                for (int index = 0; index < bottomNavigation.getMenu().size(); index++) {
+                    bottomNavigation.getMenu().getItem(index).setEnabled(!visible);
+                }
             }
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        boolean modalVisible = (packOpeningView != null
+                && packOpeningView.getVisibility() == View.VISIBLE)
+                || (missionResultPanel != null
+                && missionResultPanel.getVisibility() == View.VISIBLE);
+        setPackModal(modalVisible);
     }
 
     private DuelRules.Category selectedCategory() {
@@ -706,6 +722,17 @@ public final class DuelFragment extends Fragment {
         if (resultBanner != null) resultBanner.animate().cancel();
         if (missionResultPanel != null) missionResultPanel.animate().cancel();
         if (packOpeningView != null) packOpeningView.dismiss();
+        if (getActivity() != null) {
+            BottomNavigationView bottomNavigation =
+                    getActivity().findViewById(R.id.bottom_navigation);
+            if (bottomNavigation != null) {
+                bottomNavigation.setVisibility(View.VISIBLE);
+                bottomNavigation.setAlpha(1f);
+                for (int index = 0; index < bottomNavigation.getMenu().size(); index++) {
+                    bottomNavigation.getMenu().getItem(index).setEnabled(true);
+                }
+            }
+        }
         root = null;
         duelButton = null;
         openPackButton = null;

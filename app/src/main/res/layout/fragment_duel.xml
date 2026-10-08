@@ -6,14 +6,20 @@
     android:layout_height="match_parent"
     android:background="@color/app_background">
 
-    <LinearLayout
-        android:id="@+id/duel_content"
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:paddingHorizontal="@dimen/space_sm"
-        android:paddingTop="@dimen/space_xs"
-        android:paddingBottom="@dimen/space_xs">
+        android:fillViewport="true"
+        android:overScrollMode="never">
+
+        <LinearLayout
+            android:id="@+id/duel_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/space_sm"
+            android:paddingTop="@dimen/space_xs"
+            android:paddingBottom="@dimen/space_xs">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -80,9 +86,8 @@
         <LinearLayout
             android:id="@+id/battle_table"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/space_xs"
-            android:layout_weight="1"
             android:background="@drawable/bg_battle_table"
             android:gravity="center_horizontal"
             android:orientation="vertical"
@@ -148,9 +153,8 @@
             <include
                 android:id="@+id/opponent_duel_card"
                 layout="@layout/item_battle_active_card"
-                android:layout_width="140dp"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
+                android:layout_width="168dp"
+                android:layout_height="124dp" />
 
             <FrameLayout
                 android:id="@+id/duel_midfield"
@@ -208,9 +212,8 @@
             <include
                 android:id="@+id/player_duel_card"
                 layout="@layout/item_battle_active_card"
-                android:layout_width="140dp"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
+                android:layout_width="168dp"
+                android:layout_height="124dp" />
 
             <HorizontalScrollView
                 android:layout_width="match_parent"
@@ -343,7 +346,8 @@
                 android:maxLines="1"
                 android:text="@string/card_game_disclosure_short" />
         </LinearLayout>
-    </LinearLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
     <FrameLayout
         android:id="@+id/mission_result_panel"
