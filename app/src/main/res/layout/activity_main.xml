@@ -19,14 +19,36 @@
         app:defaultNavHost="true"
         app:navGraph="@navigation/nav_graph" />
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
+    <LinearLayout
         android:id="@+id/bottom_navigation"
-        style="@style/Widget.Marvel.BottomNavigation"
         android:layout_width="match_parent"
         android:layout_height="@dimen/bottom_navigation_height"
         android:layout_gravity="bottom"
-        android:elevation="8dp"
-        android:translationZ="16dp"
-        app:menu="@menu/menu_bottom_navigation" />
+        android:background="@drawable/bg_bottom_navigation"
+        android:elevation="16dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <LinearLayout android:id="@+id/nav_button_home" style="@style/Widget.Marvel.NavButton">
+            <ImageView android:id="@+id/nav_icon_home" style="@style/Widget.Marvel.NavIcon" android:src="@drawable/ic_home" />
+            <TextView android:id="@+id/nav_label_home" style="@style/Widget.Marvel.NavLabel" android:text="@string/nav_home" />
+        </LinearLayout>
+        <LinearLayout android:id="@+id/nav_button_explore" style="@style/Widget.Marvel.NavButton">
+            <ImageView android:id="@+id/nav_icon_explore" style="@style/Widget.Marvel.NavIcon" android:src="@drawable/ic_search" />
+            <TextView android:id="@+id/nav_label_explore" style="@style/Widget.Marvel.NavLabel" android:text="@string/nav_explore" />
+        </LinearLayout>
+        <LinearLayout android:id="@+id/nav_button_duel" style="@style/Widget.Marvel.NavButton">
+            <ImageView android:id="@+id/nav_icon_duel" style="@style/Widget.Marvel.NavIcon" android:src="@drawable/ic_cards" />
+            <TextView android:id="@+id/nav_label_duel" style="@style/Widget.Marvel.NavLabel" android:text="@string/nav_duel" />
+        </LinearLayout>
+        <LinearLayout android:id="@+id/nav_button_jarvis" style="@style/Widget.Marvel.NavButton">
+            <ImageView android:id="@+id/nav_icon_jarvis" style="@style/Widget.Marvel.NavIcon" android:src="@drawable/ic_chat" />
+            <TextView android:id="@+id/nav_label_jarvis" style="@style/Widget.Marvel.NavLabel" android:text="@string/nav_jarvis" />
+        </LinearLayout>
+        <LinearLayout android:id="@+id/nav_button_archive" style="@style/Widget.Marvel.NavButton">
+            <ImageView android:id="@+id/nav_icon_archive" style="@style/Widget.Marvel.NavIcon" android:src="@drawable/ic_shield" />
+            <TextView android:id="@+id/nav_label_archive" style="@style/Widget.Marvel.NavLabel" android:text="@string/nav_archive" />
+        </LinearLayout>
+    </LinearLayout>
 
 </FrameLayout>

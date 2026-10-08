@@ -3,6 +3,9 @@ package com.example.marvel_app;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.activity.EdgeToEdge;
@@ -16,12 +19,25 @@ import androidx.navigation.NavOptions;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.marvel_app.ui.widget.ComicTransitionView;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationBarView;
-
 public class MainActivity extends AppCompatActivity {
+    private static final int[] DESTINATIONS = {
+            R.id.nav_home, R.id.nav_explore, R.id.nav_duel, R.id.nav_jarvis, R.id.nav_archive
+    };
+    private static final int[] BUTTONS = {
+            R.id.nav_button_home, R.id.nav_button_explore, R.id.nav_button_duel,
+            R.id.nav_button_jarvis, R.id.nav_button_archive
+    };
+    private static final int[] ICONS = {
+            R.id.nav_icon_home, R.id.nav_icon_explore, R.id.nav_icon_duel,
+            R.id.nav_icon_jarvis, R.id.nav_icon_archive
+    };
+    private static final int[] LABELS = {
+            R.id.nav_label_home, R.id.nav_label_explore, R.id.nav_label_duel,
+            R.id.nav_label_jarvis, R.id.nav_label_archive
+    };
+
     private ComicTransitionView tabTransition;
-    private BottomNavigationView bottomNavigation;
+    private LinearLayout bottomNavigation;
     private NavController navController;
     private boolean bottomNavigationInteractionEnabled = true;
 
@@ -44,28 +60,13 @@ public class MainActivity extends AppCompatActivity {
         navController = host.getNavController();
         bottomNavigation = findViewById(R.id.bottom_navigation);
         tabTransition = ComicTransitionView.attachTo(this);
-        bottomNavigation.setLabelVisibilityMode(NavigationBarView.LABEL_VISIBILITY_SELECTED);
-        bottomNavigation.setOnItemSelectedListener(item -> {
-            NavDestination current = navController.getCurrentDestination();
-            if (current != null && current.getId() == item.getItemId()) {
-                return true;
-            }
-            tabTransition.play(() -> {
-                if (getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED)) {
-                    if (!navigateToTopLevel(navController, item.getItemId())) {
-                        restoreSelectedDestination(bottomNavigation, navController);
-                    }
-                } else {
-                    restoreSelectedDestination(bottomNavigation, navController);
-                }
-            });
-            return true;
-        });
-        bottomNavigation.setOnItemReselectedListener(item -> {
-            if (item.getItemId() == R.id.nav_home) {
-                navController.popBackStack(R.id.nav_home, false);
-            }
-        });
+        for (int index = 0; index < DESTINATIONS.length; index++) {
+            final int destinationId = DESTINATIONS[index];
+            View button = findViewById(BUTTONS[index]);
+            TextView label = findViewById(LABELS[index]);
+            button.setContentDescription(label.getText());
+            button.setOnClickListener(view -> selectDestination(destinationId));
+        }
         navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
             updateBottomNavigation(destination);
         });
@@ -96,14 +97,39 @@ public class MainActivity extends AppCompatActivity {
             contentParams.bottomMargin = bottomMargin;
             content.setLayoutParams(contentParams);
         }
-        for (int index = 0; index < bottomNavigation.getMenu().size(); index++) {
-            bottomNavigation.getMenu().getItem(index).setEnabled(true);
-        }
         applyBottomNavigationInteractionState();
         if (topLevel) {
-            bottomNavigation.getMenu().findItem(id).setChecked(true);
+            int selectedColor = getColor(R.color.marvel_red);
+            int normalColor = getColor(R.color.text_secondary);
+            for (int index = 0; index < DESTINATIONS.length; index++) {
+                boolean selected = DESTINATIONS[index] == id;
+                ImageView icon = findViewById(ICONS[index]);
+                TextView label = findViewById(LABELS[index]);
+                View button = findViewById(BUTTONS[index]);
+                icon.setColorFilter(selected ? selectedColor : normalColor);
+                label.setTextColor(selected ? selectedColor : normalColor);
+                label.setVisibility(selected ? View.VISIBLE : View.GONE);
+                button.setSelected(selected);
+            }
             bottomNavigation.bringToFront();
         }
+    }
+
+    private void selectDestination(int destinationId) {
+        if (!bottomNavigationInteractionEnabled || navController == null) return;
+        NavDestination current = navController.getCurrentDestination();
+        if (current != null && current.getId() == destinationId) {
+            if (destinationId == R.id.nav_home) navController.popBackStack(R.id.nav_home, false);
+            return;
+        }
+        setBottomNavigationInteractionEnabled(false);
+        tabTransition.play(destinationId, () -> {
+            if (getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED)) {
+                navigateToTopLevel(navController, destinationId);
+                updateBottomNavigation(navController.getCurrentDestination());
+            }
+            setBottomNavigationInteractionEnabled(true);
+        });
     }
 
     public void setBottomNavigationInteractionEnabled(boolean enabled) {
@@ -113,13 +139,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void applyBottomNavigationInteractionState() {
         if (bottomNavigation == null) return;
-        for (int index = 0; index < bottomNavigation.getMenu().size(); index++) {
-            View item = bottomNavigation.findViewById(
-                    bottomNavigation.getMenu().getItem(index).getItemId());
-            if (item != null) {
-                item.setClickable(bottomNavigationInteractionEnabled);
-                item.setFocusable(bottomNavigationInteractionEnabled);
-            }
+        for (int buttonId : BUTTONS) {
+            View item = findViewById(buttonId);
+            item.setClickable(bottomNavigationInteractionEnabled);
+            item.setFocusable(bottomNavigationInteractionEnabled);
         }
     }
 
@@ -153,16 +176,6 @@ public class MainActivity extends AppCompatActivity {
                 || destinationId == R.id.nav_duel
                 || destinationId == R.id.nav_jarvis
                 || destinationId == R.id.nav_archive;
-    }
-
-    private void restoreSelectedDestination(
-            BottomNavigationView bottomNavigation,
-            NavController navController
-    ) {
-        NavDestination destination = navController.getCurrentDestination();
-        if (destination != null && isTopLevel(destination.getId())) {
-            bottomNavigation.getMenu().findItem(destination.getId()).setChecked(true);
-        }
     }
 
     @Override
