@@ -24,4 +24,10 @@
     </style>
 
     <style name="Theme.Marvelapp" parent="Base.Theme.Marvelapp" />
+    <style name="Theme.Marvelapp.Splash" parent="Base.Theme.Marvelapp">
+        <item name="android:windowBackground">@color/marvel_red</item>
+        <item name="android:statusBarColor">@color/marvel_red</item>
+        <item name="android:navigationBarColor">@color/marvel_red</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
 </resources>

@@ -1,4 +1,11 @@
 <resources>
+    <string name="splash_skip">Pular</string>
+    <string name="splash_intro_description">Abertura em vídeo com painéis de quadrinhos Marvel</string>
+    <string name="transition_home">De volta ao início!</string>
+    <string name="transition_explore">Abrindo arquivos...</string>
+    <string name="transition_duel">Preparar duelo!</string>
+    <string name="transition_jarvis">JARVIS na escuta.</string>
+    <string name="transition_archive">Consultar arquivo...</string>
     <string name="app_name">Arquivo 616</string>
     <string name="nav_home">Início</string>
     <string name="nav_explore">Explorar</string>

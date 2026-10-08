@@ -1,130 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/splash_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black"
-    android:clipChildren="false"
-    android:importantForAccessibility="noHideDescendants">
+    android:background="@color/marvel_red">
 
-    <ImageView
-        android:id="@+id/splash_comic_background"
+    <VideoView
+        android:id="@+id/splash_video"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:alpha="0.28"
-        android:contentDescription="@null"
-        android:scaleType="centerCrop"
-        android:src="@drawable/comic_collage_splash" />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/bg_splash_scrim"
-        android:importantForAccessibility="no" />
-
-    <com.example.marvel_app.ui.widget.CinematicSplashView
-        android:id="@+id/splash_cinematic_layer"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-    <TextView
-        android:id="@+id/splash_issue_label"
-        style="@style/TextAppearance.Marvel.Label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top|center_horizontal"
-        android:layout_marginTop="52dp"
-        android:background="@color/black"
-        android:paddingHorizontal="12dp"
-        android:paddingVertical="6dp"
-        android:text="@string/splash_issue"
-        android:textColor="@color/comic_yellow" />
-
-    <LinearLayout
-        android:id="@+id/splash_scene"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:paddingHorizontal="@dimen/space_lg">
-
-        <FrameLayout
-            android:id="@+id/splash_shield_orbit"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:background="@drawable/bg_splash_shield_orbit"
-            android:padding="22dp">
-
-            <ImageView
-                android:id="@+id/splash_shield_icon"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:contentDescription="@string/shield_logo_description"
-                android:src="@drawable/ic_shield"
-                app:tint="@color/white" />
-        </FrameLayout>
-
-        <TextView
-            android:id="@+id/splash_title"
-            style="@style/TextAppearance.Marvel.Display"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_md"
-            android:background="@drawable/bg_splash_title_plate"
-            android:gravity="center"
-            android:paddingStart="22dp"
-            android:paddingTop="12dp"
-            android:paddingEnd="27dp"
-            android:paddingBottom="17dp"
-            android:text="@string/app_name"
-            android:textColor="@color/white" />
-
-        <TextView
-            android:id="@+id/splash_subtitle"
-            style="@style/TextAppearance.Marvel.Body"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_sm"
-            android:gravity="center"
-            android:maxWidth="280dp"
-            android:text="@string/splash_subtitle"
-            android:textAlignment="center"
-            android:textColor="@color/white" />
-
-        <com.google.android.material.progressindicator.LinearProgressIndicator
-            android:id="@+id/splash_progress"
-            android:layout_width="180dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_lg"
-            android:indeterminate="true"
-            android:importantForAccessibility="no"
-            app:indicatorColor="@color/comic_yellow"
-            app:trackColor="#66FFFFFF"
-            app:trackThickness="4dp" />
-    </LinearLayout>
+        android:contentDescription="@string/splash_intro_description" />
 
     <TextView
-        android:id="@+id/splash_fx_pow"
-        android:layout_width="132dp"
-        android:layout_height="92dp"
-        android:layout_gravity="end|bottom"
-        android:layout_marginEnd="4dp"
-        android:layout_marginBottom="54dp"
-        android:background="@drawable/comic_burst_yellow"
-        android:fontFamily="sans-serif-condensed"
+        android:id="@+id/splash_skip"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_gravity="top|end"
+        android:layout_margin="16dp"
+        android:background="@drawable/bg_splash_skip"
+        android:clickable="true"
+        android:focusable="true"
         android:gravity="center"
-        android:importantForAccessibility="no"
-        android:rotation="8"
-        android:text="@string/splash_pow"
-        android:textColor="@color/black"
-        android:textSize="30sp"
-        android:textStyle="bold|italic" />
-
-    <com.example.marvel_app.ui.widget.ComicTransitionView
-        android:id="@+id/splash_transition"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
+        android:paddingHorizontal="20dp"
+        android:text="@string/splash_skip"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        android:textStyle="bold" />
 </FrameLayout>
