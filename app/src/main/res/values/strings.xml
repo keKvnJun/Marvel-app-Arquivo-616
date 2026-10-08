@@ -79,6 +79,11 @@
     <string name="battle_card_selected">%1$s entrou na mesa.</string>
     <string name="battle_selected">selecionada</string>
     <string name="battle_hand_card_description">Carta %1$s %2$s</string>
+    <string name="battle_card_inspection_title">DOSSIÊ DA CARTA</string>
+    <string name="battle_card_inspection_close">Voltar para a mesa</string>
+    <string name="battle_active_card_description">%1$s. Toque para ampliar.</string>
+    <string name="battle_inspected_card_description">Carta ampliada de %1$s.</string>
+    <string name="battle_card_inspection_opened">Dossiê de %1$s aberto.</string>
     <string name="mission_result_label">RELATÓRIO FINAL DA MISSÃO</string>
     <string name="mission_result_score">VOCÊ %1$d × %2$d ARQUIVO</string>
     <string name="mission_result_continue">Jogar novamente</string>

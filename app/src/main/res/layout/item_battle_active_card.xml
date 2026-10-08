@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:elevation="8dp"
+    android:foreground="?attr/selectableItemBackground"
     app:cardCornerRadius="10dp"
     app:strokeColor="@color/battle_ink"
     app:strokeWidth="2dp">

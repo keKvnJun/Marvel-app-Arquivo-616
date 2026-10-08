@@ -2,6 +2,7 @@ package com.example.marvel_app;
 
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.activity.EdgeToEdge;
@@ -20,6 +21,9 @@ import com.google.android.material.navigation.NavigationBarView;
 
 public class MainActivity extends AppCompatActivity {
     private ComicTransitionView tabTransition;
+    private BottomNavigationView bottomNavigation;
+    private NavController navController;
+    private boolean bottomNavigationInteractionEnabled = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,8 +41,8 @@ public class MainActivity extends AppCompatActivity {
         if (host == null) {
             return;
         }
-        NavController navController = host.getNavController();
-        BottomNavigationView bottomNavigation = findViewById(R.id.bottom_navigation);
+        navController = host.getNavController();
+        bottomNavigation = findViewById(R.id.bottom_navigation);
         tabTransition = ComicTransitionView.attachTo(this);
         bottomNavigation.setLabelVisibilityMode(NavigationBarView.LABEL_VISIBILITY_SELECTED);
         bottomNavigation.setOnItemSelectedListener(item -> {
@@ -63,13 +67,60 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
-            int id = destination.getId();
-            boolean topLevel = isTopLevel(id);
-            bottomNavigation.setVisibility(topLevel ? View.VISIBLE : View.GONE);
-            if (topLevel) {
-                bottomNavigation.getMenu().findItem(id).setChecked(true);
-            }
+            updateBottomNavigation(destination);
         });
+        updateBottomNavigation(navController.getCurrentDestination());
+    }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        if (navController != null) {
+            updateBottomNavigation(navController.getCurrentDestination());
+        }
+    }
+
+    private void updateBottomNavigation(NavDestination destination) {
+        if (bottomNavigation == null || destination == null) return;
+        int id = destination.getId();
+        boolean topLevel = isTopLevel(id);
+        bottomNavigation.setVisibility(topLevel ? View.VISIBLE : View.GONE);
+        bottomNavigation.setAlpha(1f);
+        View content = findViewById(R.id.content_container);
+        ViewGroup.MarginLayoutParams contentParams =
+                (ViewGroup.MarginLayoutParams) content.getLayoutParams();
+        int bottomMargin = topLevel
+                ? getResources().getDimensionPixelSize(R.dimen.bottom_navigation_height)
+                : 0;
+        if (contentParams.bottomMargin != bottomMargin) {
+            contentParams.bottomMargin = bottomMargin;
+            content.setLayoutParams(contentParams);
+        }
+        for (int index = 0; index < bottomNavigation.getMenu().size(); index++) {
+            bottomNavigation.getMenu().getItem(index).setEnabled(true);
+        }
+        applyBottomNavigationInteractionState();
+        if (topLevel) {
+            bottomNavigation.getMenu().findItem(id).setChecked(true);
+            bottomNavigation.bringToFront();
+        }
+    }
+
+    public void setBottomNavigationInteractionEnabled(boolean enabled) {
+        bottomNavigationInteractionEnabled = enabled;
+        applyBottomNavigationInteractionState();
+    }
+
+    private void applyBottomNavigationInteractionState() {
+        if (bottomNavigation == null) return;
+        for (int index = 0; index < bottomNavigation.getMenu().size(); index++) {
+            View item = bottomNavigation.findViewById(
+                    bottomNavigation.getMenu().getItem(index).getItemId());
+            if (item != null) {
+                item.setClickable(bottomNavigationInteractionEnabled);
+                item.setFocusable(bottomNavigationInteractionEnabled);
+            }
+        }
     }
 
     private boolean navigateToTopLevel(NavController navController, int destinationId) {
@@ -120,6 +171,8 @@ public class MainActivity extends AppCompatActivity {
             tabTransition.cancel();
             tabTransition = null;
         }
+        bottomNavigation = null;
+        navController = null;
         super.onDestroy();
     }
 }

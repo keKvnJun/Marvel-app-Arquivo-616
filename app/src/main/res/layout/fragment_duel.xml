@@ -350,6 +350,52 @@
     </androidx.core.widget.NestedScrollView>
 
     <FrameLayout
+        android:id="@+id/duel_card_inspection_panel"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/scrim_color"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="@dimen/space_lg"
+        android:visibility="gone"
+        tools:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/TextAppearance.Marvel.Label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/space_sm"
+                android:background="@drawable/bg_red_label"
+                android:paddingHorizontal="@dimen/space_sm"
+                android:paddingVertical="@dimen/space_xs"
+                android:text="@string/battle_card_inspection_title"
+                android:textColor="@color/white" />
+
+            <include
+                android:id="@+id/inspected_duel_card"
+                layout="@layout/item_battle_active_card"
+                android:layout_width="260dp"
+                android:layout_height="340dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/inspection_close_button"
+                style="@style/Widget.Marvel.Button.Primary"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:layout_marginTop="@dimen/space_md"
+                android:minHeight="48dp"
+                android:text="@string/battle_card_inspection_close" />
+        </LinearLayout>
+    </FrameLayout>
+
+    <FrameLayout
         android:id="@+id/mission_result_panel"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

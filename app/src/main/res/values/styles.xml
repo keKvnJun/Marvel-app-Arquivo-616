@@ -98,6 +98,7 @@
         <item name="android:minHeight">@dimen/bottom_navigation_height</item>
         <item name="backgroundTint">@color/surface_primary</item>
         <item name="itemActiveIndicatorStyle">@style/Widget.Marvel.BottomNavigation.Indicator</item>
+        <item name="itemIconSize">26dp</item>
         <item name="itemIconTint">@color/bottom_nav_item</item>
         <item name="itemTextColor">@color/bottom_nav_item</item>
         <item name="labelVisibilityMode">labeled</item>

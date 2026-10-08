@@ -21,6 +21,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
 import androidx.fragment.app.Fragment;
 
+import com.example.marvel_app.MainActivity;
 import com.example.marvel_app.R;
 import com.example.marvel_app.data.local.SharedPreferencesCardStorage;
 import com.example.marvel_app.data.repository.CharacterRepository;
@@ -36,7 +37,6 @@ import com.example.marvel_app.ui.widget.PackOpeningView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.material.button.MaterialButton;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.chip.ChipGroup;
 
@@ -67,6 +67,10 @@ public final class DuelFragment extends Fragment {
     private View battleTable;
     private View playerActiveCard;
     private View opponentActiveCard;
+    private View cardInspectionPanel;
+    private View inspectedCard;
+    private MaterialButton inspectionCloseButton;
+    private View inspectionSource;
     private View missionResultPanel;
     private ImageView missionResultImage;
     private TextView missionResultTitle;
@@ -103,6 +107,9 @@ public final class DuelFragment extends Fragment {
         battleTable = view.findViewById(R.id.battle_table);
         playerActiveCard = view.findViewById(R.id.player_duel_card);
         opponentActiveCard = view.findViewById(R.id.opponent_duel_card);
+        cardInspectionPanel = view.findViewById(R.id.duel_card_inspection_panel);
+        inspectedCard = view.findViewById(R.id.inspected_duel_card);
+        inspectionCloseButton = view.findViewById(R.id.inspection_close_button);
         missionResultPanel = view.findViewById(R.id.mission_result_panel);
         missionResultImage = view.findViewById(R.id.mission_result_image);
         missionResultTitle = view.findViewById(R.id.mission_result_title);
@@ -123,6 +130,20 @@ public final class DuelFragment extends Fragment {
         openPackButton.setOnClickListener(button -> openPack());
         packOpeningView.setOnDismissListener(() -> setPackModal(false));
         duelButton.setOnClickListener(button -> playRound());
+        playerActiveCard.setOnClickListener(card ->
+                showCardInspection(player, true, playerActiveCard));
+        opponentActiveCard.setOnClickListener(card -> {
+            if (roundRevealed) {
+                showCardInspection(opponent, false, opponentActiveCard);
+            } else {
+                card.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK);
+                card.announceForAccessibility(getString(R.string.battle_rival_hidden_card));
+            }
+        });
+        inspectionCloseButton.setOnClickListener(button -> closeCardInspection());
+        cardInspectionPanel.setOnClickListener(panel -> closeCardInspection());
+        inspectedCard.setClickable(false);
+        inspectedCard.setFocusable(false);
         for (int index = 0; index < handSlots.length; index++) {
             int cardIndex = index;
             handSlots[index].setOnClickListener(card -> selectPlayerCard(cardIndex));
@@ -146,6 +167,11 @@ public final class DuelFragment extends Fragment {
                         if (missionResultPanel != null
                                 && missionResultPanel.getVisibility() == View.VISIBLE) {
                             closeMissionResult();
+                            return;
+                        }
+                        if (cardInspectionPanel != null
+                                && cardInspectionPanel.getVisibility() == View.VISIBLE) {
+                            closeCardInspection();
                             return;
                         }
                         setEnabled(false);
@@ -373,6 +399,59 @@ public final class DuelFragment extends Fragment {
         if (root == null) return;
         bindCard(root.findViewById(R.id.player_duel_card), player, true, player != null);
         bindCard(root.findViewById(R.id.opponent_duel_card), opponent, false, revealOpponent);
+        playerActiveCard.setClickable(player != null);
+        playerActiveCard.setFocusable(player != null);
+        opponentActiveCard.setClickable(opponent != null);
+        opponentActiveCard.setFocusable(opponent != null);
+    }
+
+    private void showCardInspection(
+            @Nullable CollectibleCard collectible,
+            boolean userCard,
+            View source
+    ) {
+        if (collectible == null || cardInspectionPanel == null || inspectedCard == null) return;
+        bindCard(inspectedCard, collectible, userCard, true);
+        inspectionSource = source;
+        inspectedCard.setContentDescription(getString(
+                R.string.battle_inspected_card_description,
+                collectible.getDuelCard().getName()));
+        setPackModal(true);
+        cardInspectionPanel.setVisibility(View.VISIBLE);
+        cardInspectionPanel.setAlpha(0f);
+        inspectedCard.setScaleX(0.78f);
+        inspectedCard.setScaleY(0.78f);
+        inspectedCard.setRotation(userCard ? -3f : 3f);
+        cardInspectionPanel.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+        if (ValueAnimator.areAnimatorsEnabled()) {
+            cardInspectionPanel.animate().alpha(1f).setDuration(180L).start();
+            inspectedCard.animate()
+                    .scaleX(1f)
+                    .scaleY(1f)
+                    .rotation(0f)
+                    .setDuration(260L)
+                    .start();
+        } else {
+            cardInspectionPanel.setAlpha(1f);
+            inspectedCard.setScaleX(1f);
+            inspectedCard.setScaleY(1f);
+            inspectedCard.setRotation(0f);
+        }
+        inspectionCloseButton.requestFocus();
+        cardInspectionPanel.announceForAccessibility(getString(
+                R.string.battle_card_inspection_opened,
+                collectible.getDuelCard().getName()));
+    }
+
+    private void closeCardInspection() {
+        if (cardInspectionPanel == null
+                || cardInspectionPanel.getVisibility() != View.VISIBLE) return;
+        cardInspectionPanel.animate().cancel();
+        if (inspectedCard != null) inspectedCard.animate().cancel();
+        cardInspectionPanel.setVisibility(View.GONE);
+        setPackModal(false);
+        if (inspectionSource != null) inspectionSource.requestFocus();
+        inspectionSource = null;
     }
 
     private void bindCard(View container, CollectibleCard collectible, boolean user, boolean reveal) {
@@ -390,6 +469,8 @@ public final class DuelFragment extends Fragment {
             attribute.setText("");
             value.setVisibility(View.INVISIBLE);
             loadArtwork(image, null, false);
+            container.setContentDescription(getString(
+                    user ? R.string.deck_empty_short : R.string.battle_rival_hidden_card));
             return;
         }
 
@@ -402,6 +483,9 @@ public final class DuelFragment extends Fragment {
         value.setText(String.valueOf(valueFor(card, selectedCategory())));
         value.setVisibility(user || reveal ? View.VISIBLE : View.INVISIBLE);
         loadArtwork(image, collectible, user || reveal);
+        container.setContentDescription(user || reveal
+                ? getString(R.string.battle_active_card_description, card.getName())
+                : getString(R.string.battle_rival_hidden_card));
     }
 
     private List<CollectibleCard> deckCards() {
@@ -500,27 +584,9 @@ public final class DuelFragment extends Fragment {
                     ? View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
                     : View.IMPORTANT_FOR_ACCESSIBILITY_AUTO);
         }
-        if (getActivity() != null) {
-            BottomNavigationView bottomNavigation =
-                    getActivity().findViewById(R.id.bottom_navigation);
-            if (bottomNavigation != null) {
-                bottomNavigation.setVisibility(View.VISIBLE);
-                bottomNavigation.setAlpha(1f);
-                for (int index = 0; index < bottomNavigation.getMenu().size(); index++) {
-                    bottomNavigation.getMenu().getItem(index).setEnabled(!visible);
-                }
-            }
+        if (getActivity() instanceof MainActivity) {
+            ((MainActivity) getActivity()).setBottomNavigationInteractionEnabled(!visible);
         }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        boolean modalVisible = (packOpeningView != null
-                && packOpeningView.getVisibility() == View.VISIBLE)
-                || (missionResultPanel != null
-                && missionResultPanel.getVisibility() == View.VISIBLE);
-        setPackModal(modalVisible);
     }
 
     private DuelRules.Category selectedCategory() {
@@ -721,18 +787,9 @@ public final class DuelFragment extends Fragment {
         }
         if (resultBanner != null) resultBanner.animate().cancel();
         if (missionResultPanel != null) missionResultPanel.animate().cancel();
+        if (cardInspectionPanel != null) cardInspectionPanel.animate().cancel();
+        if (inspectedCard != null) inspectedCard.animate().cancel();
         if (packOpeningView != null) packOpeningView.dismiss();
-        if (getActivity() != null) {
-            BottomNavigationView bottomNavigation =
-                    getActivity().findViewById(R.id.bottom_navigation);
-            if (bottomNavigation != null) {
-                bottomNavigation.setVisibility(View.VISIBLE);
-                bottomNavigation.setAlpha(1f);
-                for (int index = 0; index < bottomNavigation.getMenu().size(); index++) {
-                    bottomNavigation.getMenu().getItem(index).setEnabled(true);
-                }
-            }
-        }
         root = null;
         duelButton = null;
         openPackButton = null;
@@ -743,6 +800,10 @@ public final class DuelFragment extends Fragment {
         battleTable = null;
         playerActiveCard = null;
         opponentActiveCard = null;
+        cardInspectionPanel = null;
+        inspectedCard = null;
+        inspectionCloseButton = null;
+        inspectionSource = null;
         missionResultPanel = null;
         missionResultImage = null;
         missionResultTitle = null;
