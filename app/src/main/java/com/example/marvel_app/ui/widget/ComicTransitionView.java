@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
+import android.util.Property;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
@@ -225,7 +226,7 @@ public final class ComicTransitionView extends FrameLayout {
         running.start();
     }
 
-    private ObjectAnimator timed(View target, String property, long delay,
+    private ObjectAnimator timed(View target, Property<View, Float> property, long delay,
                                  long duration, float from, float to) {
         ObjectAnimator animator = ObjectAnimator.ofFloat(target, property, from, to);
         animator.setStartDelay(delay);
