@@ -6,13 +6,33 @@
         android:id="@+id/pack_opening_scrim"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#F20A0A0C"
+        android:background="#F705060B"
         android:importantForAccessibility="no" />
+
+    <TextView
+        style="@style/TextAppearance.Marvel.Label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|center_horizontal"
+        android:layout_marginTop="34dp"
+        android:letterSpacing="0.18"
+        android:text="@string/pack_opening_protocol"
+        android:textColor="@color/pack_energy" />
+
+    <TextView
+        android:id="@+id/pack_opening_counter"
+        style="@style/TextAppearance.Marvel.TitleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|center_horizontal"
+        android:layout_marginTop="58dp"
+        android:text="@string/pack_opening_counter_ready"
+        android:textColor="@color/white" />
 
     <View
         android:id="@+id/pack_opening_aura"
-        android:layout_width="360dp"
-        android:layout_height="360dp"
+        android:layout_width="390dp"
+        android:layout_height="390dp"
         android:layout_gravity="center"
         android:background="@drawable/bg_pack_opening_aura"
         android:importantForAccessibility="no" />
@@ -20,11 +40,39 @@
     <FrameLayout
         android:id="@+id/pack_card_stage"
         android:layout_width="match_parent"
-        android:layout_height="380dp"
+        android:layout_height="390dp"
         android:layout_gravity="center"
         android:clipChildren="false"
         android:clipToPadding="false"
         android:paddingHorizontal="12dp" />
+
+    <FrameLayout
+        android:id="@+id/pack_card_back"
+        android:layout_width="190dp"
+        android:layout_height="286dp"
+        android:layout_gravity="center"
+        android:background="@drawable/bg_pack_card_back"
+        android:elevation="24dp"
+        android:importantForAccessibility="no"
+        android:visibility="invisible">
+
+        <ImageView
+            android:layout_width="88dp"
+            android:layout_height="88dp"
+            android:layout_gravity="center"
+            android:contentDescription="@null"
+            android:src="@drawable/ic_shield"
+            app:tint="@color/white" />
+
+        <TextView
+            style="@style/TextAppearance.Marvel.Label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal"
+            android:layout_marginBottom="26dp"
+            android:text="@string/pack_card_back_label"
+            android:textColor="@color/comic_yellow" />
+    </FrameLayout>
 
     <FrameLayout
         android:id="@+id/pack_envelope"
@@ -32,7 +80,7 @@
         android:layout_height="340dp"
         android:layout_gravity="center"
         android:background="@drawable/bg_pack_envelope"
-        android:elevation="12dp"
+        android:elevation="28dp"
         android:padding="18dp">
 
         <TextView
@@ -80,10 +128,20 @@
             android:text="@string/pack_title"
             android:textColor="@color/black" />
 
+        <View
+            android:id="@+id/pack_envelope_glint"
+            android:layout_width="42dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/bg_pack_scan_line"
+            android:importantForAccessibility="no"
+            android:rotation="18"
+            android:translationX="-180dp" />
+
         <TextView
             android:id="@+id/pack_tear_strip"
             android:layout_width="match_parent"
-            android:layout_height="34dp"
+            android:layout_height="38dp"
             android:layout_gravity="center_vertical"
             android:background="@drawable/bg_pack_tear_strip"
             android:fontFamily="sans-serif-condensed"
@@ -101,10 +159,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginHorizontal="24dp"
         android:layout_marginBottom="38dp"
         android:background="@drawable/bg_pack_hint"
-        android:paddingHorizontal="14dp"
-        android:paddingVertical="8dp"
+        android:gravity="center"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="10dp"
         android:text="@string/pack_opening_hint"
         android:textColor="@color/white" />
 

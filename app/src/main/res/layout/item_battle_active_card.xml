@@ -4,39 +4,69 @@
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/Widget.Marvel.Card.Outlined"
     android:layout_width="match_parent"
-    android:layout_height="112dp"
-    app:cardCornerRadius="@dimen/radius_small">
+    android:layout_height="match_parent"
+    android:elevation="8dp"
+    app:cardCornerRadius="10dp"
+    app:strokeColor="@color/battle_ink"
+    app:strokeWidth="2dp">
 
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:padding="@dimen/space_xs">
+        android:layout_height="match_parent">
 
         <ImageView
             android:id="@+id/duel_card_image"
-            android:layout_width="78dp"
-            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:layout_height="92dp"
             android:background="@color/surface_secondary"
             android:contentDescription="@string/loading_image"
             android:scaleType="centerCrop"
             tools:src="@drawable/comic_collage_halftone" />
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_marginStart="@dimen/space_xs"
-            android:layout_weight="1"
-            android:gravity="center_vertical"
-            android:orientation="vertical">
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_gravity="top"
+            android:background="@drawable/bg_image_scrim"
+            android:importantForAccessibility="no" />
 
-            <TextView
-                android:id="@+id/duel_card_label"
-                style="@style/TextAppearance.Marvel.Label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                tools:text="SUA CARTA" />
+        <TextView
+            android:id="@+id/duel_card_label"
+            style="@style/TextAppearance.Marvel.Label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|start"
+            android:layout_margin="6dp"
+            android:background="@drawable/bg_red_label"
+            android:paddingHorizontal="6dp"
+            android:paddingVertical="3dp"
+            android:textColor="@color/white"
+            tools:text="SUA CARTA" />
+
+        <TextView
+            android:id="@+id/duel_card_value"
+            style="@style/TextAppearance.Marvel.TitleSmall"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_gravity="top|end"
+            android:layout_margin="6dp"
+            android:background="@drawable/bg_duel_value_badge"
+            android:elevation="10dp"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:visibility="invisible"
+            tools:text="86"
+            tools:visibility="visible" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="58dp"
+            android:layout_gravity="bottom"
+            android:background="@color/surface_elevated"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="5dp">
 
             <TextView
                 android:id="@+id/duel_card_name"
@@ -45,33 +75,34 @@
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:maxLines="1"
+                android:textSize="16sp"
                 tools:text="Spider-Man" />
 
-            <TextView
-                android:id="@+id/duel_card_rarity"
-                style="@style/TextAppearance.Marvel.Label"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/marvel_red"
-                tools:text="RARA" />
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/duel_card_attribute_label"
-                style="@style/TextAppearance.Marvel.BodySecondary"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                tools:text="Versatilidade" />
+                <TextView
+                    android:id="@+id/duel_card_rarity"
+                    style="@style/TextAppearance.Marvel.Label"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textColor="@color/marvel_red"
+                    tools:text="RARA" />
+
+                <TextView
+                    android:id="@+id/duel_card_attribute_label"
+                    style="@style/TextAppearance.Marvel.Label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_secondary"
+                    tools:text="Versatilidade" />
+            </LinearLayout>
         </LinearLayout>
-
-        <TextView
-            android:id="@+id/duel_card_value"
-            style="@style/TextAppearance.Marvel.Headline"
-            android:layout_width="56dp"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textColor="@color/marvel_red"
-            android:visibility="invisible"
-            tools:text="86"
-            tools:visibility="visible" />
-    </LinearLayout>
+    </FrameLayout>
 </com.google.android.material.card.MaterialCardView>

@@ -1,7 +1,13 @@
 package com.example.marvel_app.ui.duel;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
+import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,8 +61,11 @@ public final class DuelFragment extends Fragment {
     private MaterialButton openPackButton;
     private ChipGroup attributeGroup;
     private TextView resultBanner;
+    private TextView impactWord;
     private PackOpeningView packOpeningView;
     private View battleTable;
+    private View playerActiveCard;
+    private View opponentActiveCard;
     private View missionResultPanel;
     private ImageView missionResultImage;
     private TextView missionResultTitle;
@@ -88,8 +97,11 @@ public final class DuelFragment extends Fragment {
         openPackButton = view.findViewById(R.id.open_pack_button);
         attributeGroup = view.findViewById(R.id.duel_attribute_group);
         resultBanner = view.findViewById(R.id.duel_result_banner);
+        impactWord = view.findViewById(R.id.duel_impact_word);
         packOpeningView = view.findViewById(R.id.pack_opening_overlay);
         battleTable = view.findViewById(R.id.battle_table);
+        playerActiveCard = view.findViewById(R.id.player_duel_card);
+        opponentActiveCard = view.findViewById(R.id.opponent_duel_card);
         missionResultPanel = view.findViewById(R.id.mission_result_panel);
         missionResultImage = view.findViewById(R.id.mission_result_image);
         missionResultTitle = view.findViewById(R.id.mission_result_title);
@@ -215,6 +227,7 @@ public final class DuelFragment extends Fragment {
         player = deck.get(index);
         refreshHand(deck);
         refreshTable(false);
+        animateCardToTable(playerActiveCard, true);
         showResult(getString(R.string.battle_card_selected, player.getDuelCard().getName()),
                 ResultStyle.NEUTRAL, false);
     }
@@ -236,6 +249,8 @@ public final class DuelFragment extends Fragment {
         if (outcome == DuelRules.Outcome.FIRST_WINS) playerScore++;
         else if (outcome == DuelRules.Outcome.SECOND_WINS) opponentScore++;
         refreshTable(true);
+        animateCardToTable(opponentActiveCard, false);
+        animateRoundImpact(outcome);
 
         String roundMessage = outcomeMessage(outcome);
         round++;
@@ -251,8 +266,14 @@ public final class DuelFragment extends Fragment {
         } else {
             showResult(roundMessage + "\n" + matchResultMessage(), styleForMatch(), true);
             duelButton.setText(R.string.duel_play_again);
-            duelButton.setEnabled(true);
-            showMissionResult();
+            duelButton.setEnabled(false);
+            if (ValueAnimator.areAnimatorsEnabled()) {
+                root.postDelayed(() -> {
+                    if (root != null) showMissionResult();
+                }, 680L);
+            } else {
+                showMissionResult();
+            }
         }
     }
 
@@ -336,6 +357,14 @@ public final class DuelFragment extends Fragment {
             card.setStrokeWidth(selected ? thinStroke * 3 : thinStroke);
             slot.setAlpha(occupied ? 1f : 0.48f);
             slot.setEnabled(occupied && !roundRevealed);
+            float fanRotation = index == 0 ? -6f : index == 2 ? 6f : 0f;
+            float fanOffset = index == 1 ? 0f : dp(7f);
+            slot.animate().cancel();
+            slot.setRotation(fanRotation);
+            slot.setTranslationY(selected ? -dp(9f) : fanOffset);
+            slot.setScaleX(selected ? 1.05f : 0.96f);
+            slot.setScaleY(selected ? 1.05f : 0.96f);
+            slot.setElevation(selected ? dp(10f) : dp(3f));
         }
     }
 
@@ -421,6 +450,9 @@ public final class DuelFragment extends Fragment {
             case PRESENCE:
                 accent = ContextCompat.getColor(requireContext(), R.color.success_green);
                 break;
+            case ALLIANCES:
+                accent = ContextCompat.getColor(requireContext(), R.color.spider_portal_violet);
+                break;
             case MULTIVERSE_INDEX:
                 accent = ContextCompat.getColor(requireContext(), R.color.comic_yellow);
                 break;
@@ -479,8 +511,80 @@ public final class DuelFragment extends Fragment {
         int selected = attributeGroup.getCheckedChipId();
         if (selected == R.id.attribute_experience_chip) return DuelRules.Category.EDITORIAL_HISTORY;
         if (selected == R.id.attribute_appearances_chip) return DuelRules.Category.PRESENCE;
+        if (selected == R.id.attribute_alliances_chip) return DuelRules.Category.ALLIANCES;
         if (selected == R.id.attribute_impact_chip) return DuelRules.Category.MULTIVERSE_INDEX;
         return DuelRules.Category.VERSATILITY;
+    }
+
+    private void animateCardToTable(@Nullable View card, boolean fromBottom) {
+        if (card == null || !ValueAnimator.areAnimatorsEnabled()) return;
+        card.animate().cancel();
+        card.setAlpha(0.65f);
+        card.setScaleX(0.88f);
+        card.setScaleY(0.88f);
+        card.setTranslationY(fromBottom ? dp(34f) : -dp(34f));
+        card.animate()
+                .alpha(1f)
+                .scaleX(1f)
+                .scaleY(1f)
+                .translationY(0f)
+                .setDuration(260L)
+                .start();
+    }
+
+    private void animateRoundImpact(DuelRules.Outcome outcome) {
+        if (impactWord == null || !ValueAnimator.areAnimatorsEnabled()) return;
+        View target;
+        int word;
+        if (outcome == DuelRules.Outcome.FIRST_WINS) {
+            target = opponentActiveCard;
+            word = R.string.duel_pow;
+        } else if (outcome == DuelRules.Outcome.SECOND_WINS) {
+            target = playerActiveCard;
+            word = R.string.duel_bam;
+        } else {
+            target = battleTable;
+            word = R.string.duel_clash;
+        }
+        if (target == null) return;
+        root.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+        impactWord.animate().cancel();
+        impactWord.setText(word);
+        impactWord.setVisibility(View.VISIBLE);
+        impactWord.setAlpha(0f);
+        impactWord.setScaleX(0.3f);
+        impactWord.setScaleY(0.3f);
+
+        ObjectAnimator shake = ObjectAnimator.ofFloat(
+                target,
+                View.TRANSLATION_X,
+                0f,
+                -dp(9f),
+                dp(8f),
+                -dp(5f),
+                dp(3f),
+                0f
+        );
+        ObjectAnimator impactX = ObjectAnimator.ofFloat(
+                impactWord, View.SCALE_X, 0.3f, 1.18f, 1f);
+        ObjectAnimator impactY = ObjectAnimator.ofFloat(
+                impactWord, View.SCALE_Y, 0.3f, 1.18f, 1f);
+        ObjectAnimator impactAlpha = ObjectAnimator.ofFloat(
+                impactWord, View.ALPHA, 0f, 1f, 1f, 0f);
+        AnimatorSet animation = new AnimatorSet();
+        animation.playTogether(shake, impactX, impactY, impactAlpha);
+        animation.setDuration(620L);
+        animation.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animator) {
+                if (impactWord != null) impactWord.setVisibility(View.GONE);
+            }
+        });
+        animation.start();
+    }
+
+    private float dp(float value) {
+        return value * getResources().getDisplayMetrics().density;
     }
 
     private int categoryLabel(DuelRules.Category category) {
@@ -607,8 +711,11 @@ public final class DuelFragment extends Fragment {
         openPackButton = null;
         attributeGroup = null;
         resultBanner = null;
+        impactWord = null;
         packOpeningView = null;
         battleTable = null;
+        playerActiveCard = null;
+        opponentActiveCard = null;
         missionResultPanel = null;
         missionResultImage = null;
         missionResultTitle = null;

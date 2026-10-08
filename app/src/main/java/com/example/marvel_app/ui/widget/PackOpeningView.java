@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * User-controlled pack ritual: tap to arm the seal, drag to tear it, then tap once per card.
+ * User-controlled pack ritual: tap to arm the seal, drag to tear it, then swipe each card.
  * Game rules remain outside this view so it can be reused without coupling animation to domain data.
  */
 public final class PackOpeningView extends FrameLayout {
@@ -56,10 +56,13 @@ public final class PackOpeningView extends FrameLayout {
     }
 
     private final FrameLayout cardStage;
+    private final View cardBack;
     private final View aura;
     private final View envelope;
+    private final View envelopeGlint;
     private final View tearStrip;
     private final TextView hint;
+    private final TextView counter;
     private final int touchSlop;
     private final Map<View, Integer> hiddenAccessibilitySiblings = new IdentityHashMap<>();
     private AnimatorSet running;
@@ -67,7 +70,9 @@ public final class PackOpeningView extends FrameLayout {
     private Runnable dismissListener;
     private State state = State.IDLE;
     private float downX;
+    private float downY;
     private float tearProgress;
+    private float revealProgress;
     private int tearDirection = 1;
     private int nextCardIndex;
     private boolean dragging;
@@ -85,10 +90,13 @@ public final class PackOpeningView extends FrameLayout {
         super(context, attrs, defStyleAttr);
         LayoutInflater.from(context).inflate(R.layout.view_pack_opening, this, true);
         cardStage = findViewById(R.id.pack_card_stage);
+        cardBack = findViewById(R.id.pack_card_back);
         aura = findViewById(R.id.pack_opening_aura);
         envelope = findViewById(R.id.pack_envelope);
+        envelopeGlint = findViewById(R.id.pack_envelope_glint);
         tearStrip = findViewById(R.id.pack_tear_strip);
         hint = findViewById(R.id.pack_opening_hint);
+        counter = findViewById(R.id.pack_opening_counter);
         touchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
 
         setVisibility(GONE);
@@ -149,9 +157,11 @@ public final class PackOpeningView extends FrameLayout {
         switch (event.getActionMasked()) {
             case MotionEvent.ACTION_DOWN:
                 downX = event.getX();
+                downY = event.getY();
                 dragging = false;
                 thresholdHapticSent = false;
-                if (state == State.WAITING_TO_TEAR && getParent() != null) {
+                if ((state == State.WAITING_TO_TEAR || state == State.READY_TO_REVEAL)
+                        && getParent() != null) {
                     getParent().requestDisallowInterceptTouchEvent(true);
                 }
                 return true;
@@ -160,12 +170,19 @@ public final class PackOpeningView extends FrameLayout {
                     float delta = event.getX() - downX;
                     if (Math.abs(delta) > touchSlop) dragging = true;
                     if (dragging) updateTearProgress(delta);
+                } else if (state == State.READY_TO_REVEAL) {
+                    float delta = event.getY() - downY;
+                    if (-delta > touchSlop) dragging = true;
+                    if (dragging) updateRevealProgress(delta);
                 }
                 return true;
             case MotionEvent.ACTION_UP:
                 if (state == State.WAITING_TO_TEAR && dragging) {
                     if (tearProgress >= TEAR_THRESHOLD) finishTear(tearDirection);
                     else resetIncompleteTear();
+                } else if (state == State.READY_TO_REVEAL && dragging) {
+                    if (revealProgress >= 0.46f) finishRevealGesture();
+                    else resetIncompleteReveal();
                 } else {
                     super.performClick();
                     handleActivation(false);
@@ -175,6 +192,7 @@ public final class PackOpeningView extends FrameLayout {
                 return true;
             case MotionEvent.ACTION_CANCEL:
                 if (state == State.WAITING_TO_TEAR && dragging) resetIncompleteTear();
+                else if (state == State.READY_TO_REVEAL && dragging) resetIncompleteReveal();
                 releaseParentIntercept();
                 dragging = false;
                 return true;
@@ -235,8 +253,12 @@ public final class PackOpeningView extends FrameLayout {
                 updatePrompt(R.string.pack_opening_drag_hint, true);
             }
         } else if (state == State.READY_TO_REVEAL) {
-            haptic(HapticFeedbackConstants.VIRTUAL_KEY);
-            revealNextCard();
+            if (fromAccessibility) {
+                haptic(HapticFeedbackConstants.VIRTUAL_KEY);
+                revealNextCard();
+            } else {
+                updatePrompt(R.string.pack_opening_reveal_again, true);
+            }
         } else if (state == State.COMPLETED) {
             haptic(HapticFeedbackConstants.VIRTUAL_KEY);
             dismiss();
@@ -256,9 +278,10 @@ public final class PackOpeningView extends FrameLayout {
         running.playTogether(
                 ObjectAnimator.ofFloat(envelope, View.SCALE_X, 1f, 1.035f, 1f),
                 ObjectAnimator.ofFloat(envelope, View.SCALE_Y, 1f, 1.035f, 1f),
-                ObjectAnimator.ofFloat(envelope, View.ROTATION, 0f, -1.5f, 1.5f, 0f)
+                ObjectAnimator.ofFloat(envelope, View.ROTATION, 0f, -1.5f, 1.5f, 0f),
+                ObjectAnimator.ofFloat(envelopeGlint, View.TRANSLATION_X, -dp(180f), dp(180f))
         );
-        running.setDuration(240L);
+        running.setDuration(420L);
         running.setInterpolator(new AccelerateDecelerateInterpolator());
         startAnimation(State.WAITING_TO_TEAR, null);
     }
@@ -333,7 +356,11 @@ public final class PackOpeningView extends FrameLayout {
     private void becomeReadyToReveal() {
         state = State.READY_TO_REVEAL;
         updatePrompt(R.string.pack_opening_reveal_first, true);
-        if (cardStage.getChildCount() == 0) completeOpening();
+        if (cardStage.getChildCount() == 0) {
+            completeOpening();
+            return;
+        }
+        prepareCurrentCard();
     }
 
     private void revealNextCard() {
@@ -341,26 +368,105 @@ public final class PackOpeningView extends FrameLayout {
             completeOpening();
             return;
         }
+        revealProgress = 1f;
+        finishRevealGesture();
+    }
+
+    private void prepareCurrentCard() {
+        if (nextCardIndex >= cardStage.getChildCount()) return;
+        View current = cardStage.getChildAt(nextCardIndex);
+        current.setAlpha(1f);
+        current.setScaleX(0.94f);
+        current.setScaleY(0.94f);
+        current.setTranslationX(0f);
+        current.setTranslationY(dp(10f));
+        current.setRotation(0f);
+        current.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
+        revealProgress = 0f;
+        cardBack.setVisibility(VISIBLE);
+        cardBack.bringToFront();
+        cardBack.setAlpha(1f);
+        cardBack.setTranslationX(0f);
+        cardBack.setTranslationY(0f);
+        cardBack.setRotation(0f);
+        cardBack.setScaleX(1f);
+        cardBack.setScaleY(1f);
+        counter.setText(getResources().getString(
+                R.string.pack_opening_counter,
+                nextCardIndex + 1,
+                cardStage.getChildCount()
+        ));
+    }
+
+    private void updateRevealProgress(float deltaY) {
+        float maxDistance = dp(300f);
+        revealProgress = Math.min(1f, Math.max(0f, -deltaY / maxDistance));
+        cardBack.setTranslationY(-revealProgress * dp(330f));
+        cardBack.setRotation(revealProgress * -5f);
+        cardBack.setAlpha(1f - revealProgress * 0.36f);
+        cardBack.setScaleX(1f - revealProgress * 0.04f);
+        cardBack.setScaleY(1f - revealProgress * 0.04f);
+        View current = cardStage.getChildAt(nextCardIndex);
+        current.setScaleX(0.94f + revealProgress * 0.06f);
+        current.setScaleY(0.94f + revealProgress * 0.06f);
+        current.setTranslationY(dp(10f) * (1f - revealProgress));
+        aura.setAlpha(0.34f + revealProgress * 0.5f);
+        if (revealProgress >= 0.46f && !thresholdHapticSent) {
+            thresholdHapticSent = true;
+            haptic(HapticFeedbackConstants.CLOCK_TICK);
+        }
+    }
+
+    private void resetIncompleteReveal() {
+        state = State.ANIMATING;
+        updatePrompt(R.string.pack_opening_reveal_again, true);
+        View current = cardStage.getChildAt(nextCardIndex);
+        if (!ValueAnimator.areAnimatorsEnabled()) {
+            prepareCurrentCard();
+            state = State.READY_TO_REVEAL;
+            refreshAccessibilityAction();
+            return;
+        }
+        running = new AnimatorSet();
+        running.playTogether(
+                ObjectAnimator.ofFloat(cardBack, View.TRANSLATION_Y,
+                        cardBack.getTranslationY(), 0f),
+                ObjectAnimator.ofFloat(cardBack, View.ROTATION, cardBack.getRotation(), 0f),
+                ObjectAnimator.ofFloat(cardBack, View.ALPHA, cardBack.getAlpha(), 1f),
+                ObjectAnimator.ofFloat(cardBack, View.SCALE_X, cardBack.getScaleX(), 1f),
+                ObjectAnimator.ofFloat(cardBack, View.SCALE_Y, cardBack.getScaleY(), 1f),
+                ObjectAnimator.ofFloat(current, View.SCALE_X, current.getScaleX(), 0.94f),
+                ObjectAnimator.ofFloat(current, View.SCALE_Y, current.getScaleY(), 0.94f),
+                ObjectAnimator.ofFloat(current, View.TRANSLATION_Y,
+                        current.getTranslationY(), dp(10f))
+        );
+        running.setDuration(190L);
+        running.setInterpolator(new DecelerateInterpolator());
+        startAnimation(State.READY_TO_REVEAL, () -> revealProgress = 0f);
+    }
+
+    private void finishRevealGesture() {
+        if (nextCardIndex >= cardStage.getChildCount()) {
+            completeOpening();
+            return;
+        }
         state = State.ANIMATING;
         View current = cardStage.getChildAt(nextCardIndex);
         current.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
-        current.bringToFront();
-        current.setAlpha(0f);
-        current.setScaleX(0.78f);
-        current.setScaleY(0.78f);
-        current.setTranslationX(0f);
-        current.setTranslationY(dp(68f));
-        current.setRotation(nextCardIndex % 2 == 0 ? -3f : 3f);
 
         AnimatorSet reveal = new AnimatorSet();
         reveal.playTogether(
-                ObjectAnimator.ofFloat(current, View.ALPHA, 0f, 1f),
-                ObjectAnimator.ofFloat(current, View.SCALE_X, 0.78f, 1f),
-                ObjectAnimator.ofFloat(current, View.SCALE_Y, 0.78f, 1f),
-                ObjectAnimator.ofFloat(current, View.TRANSLATION_Y, dp(68f), 0f),
-                ObjectAnimator.ofFloat(current, View.ROTATION, current.getRotation(), 0f)
+                ObjectAnimator.ofFloat(cardBack, View.TRANSLATION_Y,
+                        cardBack.getTranslationY(), -dp(430f)),
+                ObjectAnimator.ofFloat(cardBack, View.ALPHA, cardBack.getAlpha(), 0f),
+                ObjectAnimator.ofFloat(cardBack, View.ROTATION, cardBack.getRotation(), -9f),
+                ObjectAnimator.ofFloat(current, View.SCALE_X, current.getScaleX(), 1.04f, 1f),
+                ObjectAnimator.ofFloat(current, View.SCALE_Y, current.getScaleY(), 1.04f, 1f),
+                ObjectAnimator.ofFloat(current, View.TRANSLATION_Y, current.getTranslationY(), 0f),
+                ObjectAnimator.ofFloat(aura, View.SCALE_X, aura.getScaleX(), 1.2f),
+                ObjectAnimator.ofFloat(aura, View.SCALE_Y, aura.getScaleY(), 1.2f)
         );
-        reveal.setDuration(ValueAnimator.areAnimatorsEnabled() ? 280L : 0L);
+        reveal.setDuration(ValueAnimator.areAnimatorsEnabled() ? 320L : 0L);
         reveal.setInterpolator(new OvershootInterpolator(0.45f));
         running = reveal;
         int revealedIndex = nextCardIndex;
@@ -384,11 +490,13 @@ public final class PackOpeningView extends FrameLayout {
         announceForAccessibility(announcement);
 
         if (nextCardIndex >= cardStage.getChildCount()) {
+            cardBack.setVisibility(INVISIBLE);
             arrangeFinalCards();
         } else {
             moveRevealedCardAside(card, revealedIndex);
             state = State.READY_TO_REVEAL;
             updatePrompt(R.string.pack_opening_reveal_next, false);
+            prepareCurrentCard();
         }
     }
 
@@ -429,6 +537,8 @@ public final class PackOpeningView extends FrameLayout {
 
     private void completeOpening() {
         state = State.COMPLETED;
+        cardBack.setVisibility(INVISIBLE);
+        counter.setText(R.string.pack_opening_counter_ready);
         updatePrompt(R.string.pack_opening_continue, false);
         setContentDescription(getResources().getString(R.string.pack_opening_revealed));
         announceForAccessibility(getResources().getString(R.string.pack_opening_revealed));
@@ -467,8 +577,16 @@ public final class PackOpeningView extends FrameLayout {
         envelope.setScaleY(1f);
         envelope.setRotation(0f);
         envelope.setTranslationY(0f);
+        envelopeGlint.setTranslationX(-dp(180f));
         tearProgress = 0f;
+        revealProgress = 0f;
         tearStrip.setTranslationX(0f);
+        cardBack.setVisibility(INVISIBLE);
+        cardBack.setAlpha(1f);
+        cardBack.setTranslationX(0f);
+        cardBack.setTranslationY(0f);
+        cardBack.setRotation(0f);
+        counter.setText(R.string.pack_opening_counter_ready);
         hint.setAlpha(1f);
         aura.setAlpha(0f);
         aura.setScaleX(0.45f);

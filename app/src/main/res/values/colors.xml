@@ -25,6 +25,13 @@
     <color name="spider_magenta">#FF2D87</color>
     <color name="spider_portal_violet">#7B3DFF</color>
     <color name="comic_burst_cream">#FFF4C7</color>
+    <color name="battle_sky">#C9E9F3</color>
+    <color name="battle_rival_zone">#E77A78</color>
+    <color name="battle_agent_zone">#42B8DF</color>
+    <color name="battle_ring">#EAF8FC</color>
+    <color name="battle_ink">#183044</color>
+    <color name="pack_midnight">#090B13</color>
+    <color name="pack_energy">#65D8FF</color>
     <color name="transparent">#00000000</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>

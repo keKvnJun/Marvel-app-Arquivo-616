@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:gravity="center" android:width="78dp" android:height="78dp">
+        <shape android:shape="oval">
+            <solid android:color="#33FFFFFF" />
+            <stroke android:width="3dp" android:color="@color/battle_ring" />
+        </shape>
+    </item>
+    <item android:gravity="center" android:width="34dp" android:height="34dp">
+        <shape android:shape="oval">
+            <solid android:color="#44FFFFFF" />
+            <stroke android:width="2dp" android:color="@color/battle_ring" />
+        </shape>
+    </item>
+</layer-list>

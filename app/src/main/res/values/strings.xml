@@ -111,6 +111,9 @@
     <string name="duel_win">Sua carta venceu a rodada.</string>
     <string name="duel_loss">A carta rival venceu a rodada.</string>
     <string name="duel_invalid">Rodada inválida.</string>
+    <string name="duel_pow">POW!</string>
+    <string name="duel_bam">BAM!</string>
+    <string name="duel_clash">CLASH!</string>
     <string name="duel_match_win">Missão concluída. Você venceu a partida.</string>
     <string name="duel_match_loss">O Arquivo venceu a partida. Ajuste seu deck e tente novamente.</string>
     <string name="duel_match_tie">Partida empatada. O Arquivo recomenda uma revanche.</string>
@@ -165,8 +168,9 @@
     <string name="pack_opening_drag_hint">Arraste o lacre para o lado</string>
     <string name="pack_opening_drag_again">Continue arrastando até romper o lacre</string>
     <string name="pack_opening_tear_action">Rasgar lacre</string>
-    <string name="pack_opening_reveal_first">Toque para revelar a primeira carta</string>
-    <string name="pack_opening_reveal_next">Toque para revelar a próxima carta</string>
+    <string name="pack_opening_reveal_first">Deslize a carta para cima para revelar</string>
+    <string name="pack_opening_reveal_next">Deslize para revelar a próxima carta</string>
+    <string name="pack_opening_reveal_again">Continue deslizando a carta para cima</string>
     <string name="pack_opening_reveal_action">Revelar próxima carta</string>
     <string name="pack_opening_card_revealed">Carta %1$d de %2$d: %3$s</string>
     <string name="pack_opening_continue">Toque para guardar as cartas</string>
@@ -175,6 +179,10 @@
     <string name="pack_opening_revealed">Pacote aberto. Todas as cartas foram reveladas.</string>
     <string name="pack_tear_strip_label">DESLIZE PARA RASGAR  ›</string>
     <string name="pack_opening_finish_first">Conclua a abertura do pacote antes de sair.</string>
+    <string name="pack_opening_protocol">PROTOCOLO DE AQUISIÇÃO S.H.I.E.L.D.</string>
+    <string name="pack_opening_counter_ready">PACOTE 616</string>
+    <string name="pack_opening_counter">CARTA %1$d DE %2$d</string>
+    <string name="pack_card_back_label">DADOS CRIPTOGRAFADOS</string>
     <string name="relationship_network_title">Rede de Inteligência S.H.I.E.L.D.</string>
     <string name="relationship_network_subtitle">Conexões conhecidas do alvo. Toque em aliados ou inimigos para abrir outro dossiê.</string>
     <string name="relationship_allies">SINAIS ALIADOS</string>
