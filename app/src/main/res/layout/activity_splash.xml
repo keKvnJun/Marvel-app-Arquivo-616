@@ -12,6 +12,51 @@
         android:layout_gravity="center"
         android:contentDescription="@string/splash_intro_description" />
 
+    <FrameLayout
+        android:id="@+id/splash_brand"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/marvel_red">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:alpha="0.18"
+            android:contentDescription="@null"
+            android:scaleType="centerCrop"
+            android:src="@drawable/comic_collage_splash" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingHorizontal="24dp">
+
+            <ImageView
+                android:id="@+id/splash_brand_emblem"
+                android:layout_width="204dp"
+                android:layout_height="204dp"
+                android:contentDescription="@string/shield_logo_description"
+                android:scaleType="fitCenter"
+                android:src="@drawable/shield_logo"
+                android:tint="@color/white" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:fontFamily="sans-serif-condensed"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:text="@string/app_name"
+                android:textColor="@color/white"
+                android:textSize="38sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </FrameLayout>
+
     <TextView
         android:id="@+id/splash_skip"
         android:layout_width="wrap_content"

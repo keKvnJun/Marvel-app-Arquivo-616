@@ -11,10 +11,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class SplashActivity extends AppCompatActivity {
     private VideoView introVideo;
+    private View brand;
+    private View brandEmblem;
     private boolean navigating;
     private boolean foreground;
     private boolean prepared;
     private boolean completed;
+    private boolean brandRevealed;
     private final Runnable reducedMotionExit = this::openMain;
 
     @Override
@@ -29,10 +32,15 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
 
         introVideo = findViewById(R.id.splash_video);
+        brand = findViewById(R.id.splash_brand);
+        brandEmblem = findViewById(R.id.splash_brand_emblem);
         findViewById(R.id.splash_skip).setOnClickListener(view -> openMain());
         introVideo.setOnPreparedListener(player -> {
             prepared = true;
-            if (foreground) introVideo.start();
+            if (foreground) {
+                introVideo.start();
+                revealVideo();
+            }
         });
         introVideo.setOnCompletionListener(player -> {
             completed = true;
@@ -59,7 +67,16 @@ public class SplashActivity extends AppCompatActivity {
             findViewById(R.id.splash_root).postDelayed(reducedMotionExit, 400L);
         } else if (prepared) {
             introVideo.start();
+            revealVideo();
         }
+    }
+
+    private void revealVideo() {
+        if (brandRevealed || !ValueAnimator.areAnimatorsEnabled()) return;
+        brandRevealed = true;
+        brandEmblem.animate().scaleX(1.08f).scaleY(1.08f).setDuration(680L).start();
+        brand.animate().alpha(0f).setStartDelay(560L).setDuration(380L)
+                .withEndAction(() -> brand.setVisibility(View.GONE)).start();
     }
 
     @Override
